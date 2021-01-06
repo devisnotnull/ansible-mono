@@ -1,0 +1,210 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+# Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
+img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+img_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+k8s_resource_pool: "Kubernetes"
+
+# Path to the SSH Public Key on your Proxmox Server.
+k8s_ssh_key_host: "/root/.ssh/id_rsa.pub"
+k8s_ssh_key: "/root/.ssh/id_rsa.pub"
+
+# VM IDs
+k8s_master1_id: '4010'
+k8s_node1_id: '40100'
+k8s_node2_id: '40101'
+k8s_node3_id: '40102'
+
+# Hostnames
+k8s_master1_hn: "master1.k8.devnotnull.com"
+k8s_node1_hn: "minion1.k8.devnotnull.com"
+k8s_node2_hn: "minion2.k8.devnotnull.com"
+k8s_node3_hn: "minion3.k8.devnotnull.com"
+
+# Number of CPUs
+k8s_master1_cpu: "2"
+k8s_node1_cpu: "4"
+k8s_node2_cpu: "4"
+k8s_node3_cpu: "4"
+
+# Amount of memory expressed in megabytes
+k8s_master1_mem: "8192"
+k8s_node1_mem: "8192"
+k8s_node2_mem: "8192"
+k8s_node3_mem: "8192"
+
+# Disk Sizes
+k8s_master1_size: "50G"
+k8s_node1_size: "50G"
+k8s_node2_size: "50G"
+k8s_node3_size: "50G"
+
+# IP Addresses
+k8s_master1_ip: "10.10.10.100"
+k8s_node1_ip: "10.10.10.200"
+k8s_node2_ip: "10.10.10.201"
+k8s_node3_ip: "10.10.10.202"
+
+# Subnet Sizes
+k8s_master1_sn: "/24"
+k8s_node1_sn: "/24"
+k8s_node2_sn: "/24"
+k8s_node3_sn: "/24"
+
+# Network Gateway
+k8s_master1_gw: "10.10.10.1"
+k8s_node1_gw: "10.10.10.1"
+k8s_node2_gw: "10.10.10.1"
+k8s_node3_gw: "10.10.10.1"
+
+# DNS Servers
+k8s_master1_ns: "10.10.10.1"
+k8s_node1_ns: "10.10.10.1"
+k8s_node2_ns: "10.10.10.1"
+k8s_node3_ns: "10.10.10.1"
+
+# Search Domains
+k8s_master1_sd: "internal"
+k8s_node1_sd: "internal"
+k8s_node2_sd: "internal"
+k8s_node3_sd: "internal"
+
+# Network Bridges
+k8s_master1_bridge: "vmbr0"
+k8s_node1_bridge: "vmbr0"
+k8s_node2_bridge: "vmbr0"
+k8s_node3_bridge: "vmbr0"
+
+# Storage volumes
+k8s_master1_stg: "group1"
+k8s_node1_stg: "group1"
+k8s_node2_stg: "group1"
+k8s_node3_stg: "group1"
+
+# CIDR for the Calico Pod Network - MUST be different from your Kubernetes CIDR to avoid an IP conflict. Subnet size will automatically be set to /16.
+calico_cidr: '172.16.0.0'
+
+# URL for the Calico Network Policy: 
+# Can be found here: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#tabs-pod-install-1
+calico_policy_url: 'https://docs.projectcalico.org/v3.11/manifests/calico.yaml'
+
+# The URL for the Kubernetes Dashboard Manifest. Not locally hosted as it changes frequently.
+# Can be found in the `Getting Started` section of this page: https://github.com/kubernetes/dashboard/blob/master1/README.md
+k8s_dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml'
+
+# Service user created for the dashboard.
+k8s_user_name: 'tj'
+
+###############################################################################################
+#                                        -VLAN Options-                                       # 
+###############################################################################################
+# These parameters are only required if your network is configured with VLANs and you wish to #
+# specify which VLAN each of your Kubernetes nodes is allocated to. Leave these variables     #
+# blank if you do not intend to use VLANs for your cluster.                                   #
+###############################################################################################
+
+# VLAN Tags
+k8s_master1_vlan: "40"
+k8s_node1_vlan: "40"
+k8s_node2_vlan: "40"
+k8s_node3_vlan: "40"
+
+###############################################################################################
+#                                        -NFS Options-                                        # 
+###############################################################################################
+# These parameters are only required if you have an NFS server and would like to enable the   #
+# optional support for dynamic provisioning of Persistent Storage volumes for your pods.
+###############################################################################################
+
+# NFS server
+nfs_hostname: 'nfs.k8.devnotnull.com'
+
+# NFS Mount Point
+nfs_mount_point: ' /mnt/NFSPool/iocage/s3'
+
+# NFS Provisioner Name
+nfs_provisioner: 'saturnpool'
+
+# Namespace to deploy the NFS Provisioner to.
+nfs_namespace: 'nfs-provisioner'
+
+# Default reclaim policy. https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy
+nfs_reclaim_policy: 'Retain'
+
+
+###############################################################################################
+#                                      -MetalLB Options-                                      # 
+###############################################################################################
+#                                                                                             #
+# WARNING: MetalLB is currently supported, however dynamic provisioning is NOT currently      #
+# supported despite the explanation below. This will come in a later release, however, if you #
+# are interested in using this feature you will need to modify the configmap located in the   #
+# MetalLB files directory yourself to match the variables you declare here.                   #
+#                                                                                             #
+# These parameters are only required if you want to enable on-prem load balancing with        #
+# MetalLB. The MetalLB configuration file will be dynamically provisioned based on how many   #
+# variable sets you declare below. This is intended to allow you to provision a single or     #
+# multiple address pools depending on your personal network configuration. The configuration  #
+# is dynamically generated based on how many sets of variables you list below. For example:   #
+#                                                                                             #
+# If you wish to deploy a single address pool, you would declare these three variables.       #
+#                                                                                             #
+# metallb_ap1_name: NAME                                                                      #
+# metallb_ap1_protocol: PROTOCOL                                                              #
+# metallb_ap1_cidr: CIDR                                                                      #
+#                                                                                             #
+#                                                                                             #
+# However, if you wished to declare two address pools, you would include a second set of      #
+# variables where the `ap1` portion of the variable name is incremeneted by one.              #
+#                                                                                             #
+# metallb_ap1_name: NAME                                                                      #
+# metallb_ap2_name: NAME                                                                      #
+# metallb_ap1_protocol: PROTOCOL                                                              #
+# metallb_ap2_protocol: PROTOCOL                                                              #
+# metallb_ap1_cidr: CIDR                                                                      #
+# metallb_ap2_cidr: CIDR                                                                      #
+###############################################################################################
+
+# The IP Address of the router you wish to peer with.
+metallb_peer_router: '10.10.10.1'
+
+# The AS Number of the router you wish to peer with.
+metallb_peer_asn: '64512'
+
+# The names of your address pools.
+metallb_ap1_name: 'VLAN20'
+metallb_ap4_name: 'VLAN70'
+metallb_ap2_name: 'VLAN50'
+metallb_ap3_name: 'VLAN60'
+
+# The protocols of your address pools. (bgp|layer2)
+metallb_ap1_protocol: 'bgp'
+metallb_ap2_protocol: 'bgp'
+metallb_ap3_protocol: 'bgp'
+metallb_ap4_protocol: 'bgp'
+
+# The CIDRs of your address pools.
+metallb_ap1_cidr: '192.168.20.1/24'
+metallb_ap2_cidr: '192.168.50.1/24'
+metallb_ap3_cidr: '192.168.60.1/24'
+metallb_ap4_cidr: '192.168.70.1/24'
+
+
+###############################################################################################
+#                              -NGINX Ingress Controller Options-                             # 
+###############################################################################################
+# These parameters are only required if you want to enable the NGINX ingress controller.      #
+# REQUIREMENT: The NGINX Ingress controller integration requires a Load Balancer integration. #
+###############################################################################################
+
+# The IP Address to use 
+nginx_load_balancer_ip: '10.10.10.100'
