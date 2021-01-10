@@ -14,15 +14,6 @@
         - { id: "{{ k8s_node3_id }}", stg: "{{ k8s_node3_stg }}" }      
   tasks:
 
-      - name: Creating a resource pool.
-        shell: pvesh create /pools -poolid "{{ k8s_resource_pool }}" --Comment "Kubernetes Cluster"
-        ignore_errors: yes
-
-      - name: Downloading the Debian qcow2 image.
-        get_url:
-            url: "{{ img_image }}"
-            dest: "{{ img_download_location }}image.img"
-
       - name: Copy host ssh key
         copy:
           src: ~/.ssh/id_rsa.pub
@@ -34,7 +25,16 @@
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
-            
+
+      - name: Creating a resource pool.
+        shell: pvesh create /pools -poolid "{{ k8s_resource_pool }}" --Comment "Kubernetes Cluster"
+        ignore_errors: yes
+
+      - name: Downloading the Debian qcow2 image.
+        get_url:
+            url: "{{ img_image }}"
+            dest: "{{ img_download_location }}image.qcow2"
+
       - name: Creating the VMs.
         shell: >
             qm create {{ item.id }}
@@ -58,7 +58,7 @@
             - { id: "{{ k8s_node3_id }}", hn: "{{ k8s_node3_hn }}", cpu: "{{ k8s_node3_cpu }}", mem: "{{ k8s_node3_mem }}", gw: "{{ k8s_node3_gw }}", ip: "{{ k8s_node3_ip }}", sn: "{{ k8s_node3_sn }}", ns: "{{ k8s_node3_ns }}", sd: "{{ k8s_node3_sd }}" }
 
       - name: Importing the img image as a disk.
-        shell: qm importdisk {{ item.id }} {{ img_download_location }}image.img {{ item.stg }}
+        shell: qm importdisk {{ item.id }} {{ img_download_location }}image.qcow2 {{ item.stg }}
         with_items: "{{ id_stg_list }}"
 
       - name: Configuring the VM Hardware.

@@ -1,0 +1,60 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+# Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
+img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+img_download_location: '/tmp/'
+
+# Path to the SSH Public Key on your Proxmox Server.
+elk_ssh_key_host: "/root/.ssh/id_rsa.pub"
+elk_ssh_key: "/root/.ssh/id_rsa.pub"
+provision_ssh_key: "/root/.ssh/id_rsa_desktop.pub"
+
+# Resource Pool for your virtual machines.
+elk_resource_pool: "Elasticsearch"
+
+# VM IDs
+elk_id: '5011'
+
+## Descriptive Name
+elk_name: 'ELK'
+
+# Hostnames
+elk_hn: "elk.devnotnull.com"
+
+# Number of CPUs
+elk_cpu: "2"
+
+# Amount of memory expressed in megabytes
+elk_mem: "8192"
+
+# Disk Sizes
+elk_size: "100G"
+
+# IP Addresses
+elk_ip: "10.10.10.122"
+
+# Subnet Sizes
+elk_sn: "/24"
+
+# Network Gateway
+elk_gw: "10.10.10.1"
+
+# DNS Servers
+elk_ns: "10.10.10.1"
+
+# Search Domains
+elk_sd: "devnotnull.com"
+
+# Network Bridges
+elk_bridge: "vmbr1"
+
+# Storage volumes
+elk_stg: "group1"
+

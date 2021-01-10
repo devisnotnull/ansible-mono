@@ -3,16 +3,16 @@
   gather_facts: False
   vars:
     id_list:
-        - "{{ es_master_id }}"  
+        - "{{ elk_id }}"  
     id_stg_list:
-        - { id: "{{ es_master_id }}", stg: "{{ es_master_stg }}" }
+        - { id: "{{ elk_id }}", stg: "{{ elk_stg }}" }
   tasks:
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
 
       - name: Creating a resource pool.
-        shell: pvesh create /pools -poolid "{{ es_resource_pool }}" --Comment "Elasticsearch Cluster"
+        shell: pvesh create /pools -poolid "{{ elk_resource_pool }}" --Comment "Elasticsearch Cluster"
         ignore_errors: yes
 
       - name: Downloading the Ubuntu image.
@@ -23,7 +23,7 @@
       - name: Creating the VMs.
         shell: >
             qm create {{ item.id }}
-            --pool {{ es_resource_pool }}
+            --pool {{ elk_resource_pool }}
             --ostype "l26"
             --name {{ item.hn }}
             --description "Elasticsearch VM"
@@ -37,7 +37,7 @@
             --ciuser user
             --cipassword password
         with_items: 
-            - { id: "{{ es_master_id }}", hn: "{{ es_master_hn }}", cpu: "{{ es_master_cpu }}", mem: "{{ es_master_mem }}", gw: "{{ es_master_gw }}", ip: "{{ es_master_ip }}", sn: "{{ es_master_sn }}", ns: "{{ es_master_ns }}", sd: "{{ es_master_sd }}" }
+            - { id: "{{ elk_id }}", hn: "{{ elk_hn }}", cpu: "{{ elk_cpu }}", mem: "{{ elk_mem }}", gw: "{{ elk_gw }}", ip: "{{ elk_ip }}", sn: "{{ elk_sn }}", ns: "{{ elk_ns }}", sd: "{{ elk_sd }}" }
 
       - name: Importing the img image as a disk.
         shell: qm importdisk {{ item.id }} {{ img_download_location }}image.img {{ item.stg }}
@@ -58,7 +58,7 @@
       - name: Resizing the disk. 
         shell: qm resize {{ item.id }} scsi0 {{ item.size }}
         with_items: 
-            - { id: "{{ es_master_id }}", size: "{{ es_master_size }}" }
+            - { id: "{{ elk_id }}", size: "{{ elk_size }}" }
         ignore_errors: no
 
       - name: Waiting 30 seconds for the disks to provision.
