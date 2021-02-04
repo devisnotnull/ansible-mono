@@ -1,15 +1,7 @@
 ---
 - hosts: k8s_master1:k8s_nodes
   gather_facts: False
-  tasks:
-
-      - name: "Configure resolv.conf"
-        include_role:
-          name: "ahuffman.resolv"
-        vars:
-          resolv_nameservers:
-            - "10.10.10.1"
-            
+  tasks:            
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml

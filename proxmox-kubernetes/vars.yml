@@ -15,8 +15,7 @@ img_download_location: '/tmp/'
 k8s_resource_pool: "Kubernetes"
 
 # Path to the SSH Public Key on your Proxmox Server.
-k8s_ssh_key_host: "/root/.ssh/id_rsa.pub"
-k8s_ssh_key: "/root/.ssh/id_rsa.pub"
+k8s_ssh_key: "/root/.ssh/authorized_keys"
 
 # VM IDs
 k8s_master1_id: '4010'
