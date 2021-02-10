@@ -25,7 +25,7 @@
       - name: Deleting the Resource Pool.
         shell: pvesh delete /pools/{{ k8s_resource_pool }}
 
-      - name: Deleting the Debian img image.
+      - name: Deleting the Ubuntu img image.
         file:
             path: "/tmp/image.img"
             state: absent

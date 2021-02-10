@@ -3,15 +3,16 @@
   gather_facts: False
   vars:
     id_list:
-        - "{{ k8s_master1_id }}"
         - "{{ k8s_node1_id }}"
         - "{{ k8s_node2_id }}"
-        - "{{ k8s_node3_id }}"      
+        - "{{ k8s_node3_id }}"     
+        - "{{ k8s_master1_id }}"
     id_stg_list:
-        - { id: "{{ k8s_master1_id }}", stg: "{{ k8s_master1_stg }}" }
         - { id: "{{ k8s_node1_id }}", stg: "{{ k8s_node1_stg }}" }
         - { id: "{{ k8s_node2_id }}", stg: "{{ k8s_node2_stg }}" }
         - { id: "{{ k8s_node3_id }}", stg: "{{ k8s_node3_stg }}" }      
+        - { id: "{{ k8s_master1_id }}", stg: "{{ k8s_master1_stg }}" }
+
   tasks:
       - name: Including the variables.
         include_vars:
@@ -33,20 +34,20 @@
             --ostype "l26"
             --name {{ item.hn }}
             --description "Kubernetes VM"
+            --ciuser "user"
+            --cipassword "password"
             --agent 1
             --cores {{ item.cpu }}
             --memory {{ item.mem }} 
             --net0 "virtio,bridge=vmbr0"
-            --sshkeys "{{ k8s_ssh_key }}"
             --ipconfig0 "gw={{ item.gw }},ip={{ item.ip }}{{ item.sn }}"
             --nameserver {{ item.ns }}
             --searchdomain {{ item.sd }}
-
         with_items: 
-            - { id: "{{ k8s_master1_id }}", hn: "{{ k8s_master1_hn }}", cpu: "{{ k8s_master1_cpu }}", mem: "{{ k8s_master1_mem }}", gw: "{{ k8s_master1_gw }}", ip: "{{ k8s_master1_ip }}", sn: "{{ k8s_master1_sn }}", ns: "{{ k8s_master1_ns }}", sd: "{{ k8s_master1_sd }}" }
             - { id: "{{ k8s_node1_id }}", hn: "{{ k8s_node1_hn }}", cpu: "{{ k8s_node1_cpu }}", mem: "{{ k8s_node1_mem }}", gw: "{{ k8s_node1_gw }}", ip: "{{ k8s_node1_ip }}", sn: "{{ k8s_node1_sn }}", ns: "{{ k8s_node1_ns }}", sd: "{{ k8s_node1_sd }}" }
             - { id: "{{ k8s_node2_id }}", hn: "{{ k8s_node2_hn }}", cpu: "{{ k8s_node2_cpu }}", mem: "{{ k8s_node2_mem }}", gw: "{{ k8s_node2_gw }}", ip: "{{ k8s_node2_ip }}", sn: "{{ k8s_node2_sn }}", ns: "{{ k8s_node2_ns }}", sd: "{{ k8s_node2_sd }}" }
             - { id: "{{ k8s_node3_id }}", hn: "{{ k8s_node3_hn }}", cpu: "{{ k8s_node3_cpu }}", mem: "{{ k8s_node3_mem }}", gw: "{{ k8s_node3_gw }}", ip: "{{ k8s_node3_ip }}", sn: "{{ k8s_node3_sn }}", ns: "{{ k8s_node3_ns }}", sd: "{{ k8s_node3_sd }}" }
+            - { id: "{{ k8s_master1_id }}", hn: "{{ k8s_master1_hn }}", cpu: "{{ k8s_master1_cpu }}", mem: "{{ k8s_master1_mem }}", gw: "{{ k8s_master1_gw }}", ip: "{{ k8s_master1_ip }}", sn: "{{ k8s_master1_sn }}", ns: "{{ k8s_master1_ns }}", sd: "{{ k8s_master1_sd }}" }
 
       - name: Importing the img image as a disk.
         shell: qm importdisk {{ item.id }} {{ img_download_location }}image.qcow2 {{ item.stg }}
@@ -59,18 +60,15 @@
                 --ide2 {{ item.stg }}:cloudinit
                 --boot c --bootdisk scsi0
                 --serial0 socket 
-                --sshkeys "{{ k8s_ssh_key }}"
-                --ciuser user
-                --cipassword "password"
         with_items: "{{ id_stg_list }}"
 
       - name: Resizing the disk. 
         shell: qm resize {{ item.id }} scsi0 {{ item.size }}
         with_items: 
-            - { id: "{{ k8s_master1_id }}", size: "{{ k8s_master1_size }}" }
             - { id: "{{ k8s_node1_id }}", size: "{{ k8s_node1_size }}" }
             - { id: "{{ k8s_node2_id }}", size: "{{ k8s_node2_size }}" }
             - { id: "{{ k8s_node3_id }}", size: "{{ k8s_node3_size }}" }
+            - { id: "{{ k8s_master1_id }}", size: "{{ k8s_master1_size }}" }
         ignore_errors: yes
 
       - name: Waiting 60 seconds for the disks to provision.
@@ -89,6 +87,6 @@
         shell: qm start {{ item }}
         with_items: "{{ id_list }}"
 
-      - name: Waiting 240 seconds for for Debian to finish booting.
+      - name: Waiting 180 seconds for for buntu to finish booting.
         pause:
-            seconds: 240
+            seconds: 180

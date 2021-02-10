@@ -5,7 +5,6 @@
 ###############################################################################################
 
 # img image to use for your Virtual Machines: 
-# Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
 img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
 
 # Location to use for storing the img image. Be sure to end the directory with a '/'.
@@ -15,7 +14,7 @@ img_download_location: '/tmp/'
 k8s_resource_pool: "Kubernetes"
 
 # Path to the SSH Public Key on your Proxmox Server.
-k8s_ssh_key: "/root/.ssh/authorized_keys"
+k8s_ssh_key: "/root/.ssh/id_rsa_jump.pub"
 
 # VM IDs
 k8s_master1_id: '4010'
@@ -24,10 +23,10 @@ k8s_node2_id: '40101'
 k8s_node3_id: '40102'
 
 # Hostnames
-k8s_master1_hn: "master1.k8.devnotnull.com"
-k8s_node1_hn: "minion1.k8.devnotnull.com"
-k8s_node2_hn: "minion2.k8.devnotnull.com"
-k8s_node3_hn: "minion3.k8.devnotnull.com"
+k8s_master1_hn: "master1.k8"
+k8s_node1_hn: "minion1.k8"
+k8s_node2_hn: "minion2.k8"
+k8s_node3_hn: "minion3.k8"
 
 # Number of CPUs
 k8s_master1_cpu: "2"
@@ -101,7 +100,7 @@ calico_policy_url: 'https://docs.projectcalico.org/v3.11/manifests/calico.yaml'
 k8s_dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml'
 
 # Service user created for the dashboard.
-k8s_user_name: 'tj'
+k8s_user_name: 'devnotnull'
 
 ###############################################################################################
 #                                        -VLAN Options-                                       # 

@@ -9,12 +9,10 @@ Declaratively build a 4 node Kubernetes cluster on Proxmox using Ansible and QEM
 
 **Approximate deployment time:** 25 minutes
 
-
 ## Requirements
 1. Proxmox server
 2. DNS Server
 3. Ansible 2.7.0+. Known incompatibility with a previous build.
-
 
 ## Instructions
 **Required:**
@@ -36,7 +34,6 @@ Declaratively build a 4 node Kubernetes cluster on Proxmox using Ansible and QEM
 | [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx) | `ansible-playbook -i inventory.ini playbooks/optional/deploy_ingress-nginx.yml` | [MetalLB](https://metallb.universe.tf/) or other Load Balancer integration |
 | [DataDog agents](https://docs.datadoghq.com/integrations/kubernetes/) | `ansible-playbook -i inventory.ini playbooks/optional/deploy_datadog.yml` | |
 
-
 ## Tips
 1. You can rollback the entire deployment with: `ansible-playbook -i inventory.ini playbooks/optional/delete_all_resources.yml`
 2. If Calico isn't deploying correctly it's likely the CIDR you assigned to it in `vars.yml` conflicts with your network. 
@@ -45,7 +42,6 @@ Declaratively build a 4 node Kubernetes cluster on Proxmox using Ansible and QEM
 * No virtualization overhead means better performance
 * Ability to directly mount volumes from your server into your containers.
 ```
-
 
 ## TODO
 1. Add better support for multi-node Proxmox clusters.
@@ -57,16 +53,3 @@ Declaratively build a 4 node Kubernetes cluster on Proxmox using Ansible and QEM
 7. Create playbook to install OS updates on nodes.
 8. Move dashboard deployment to optional features.
 9. Refactor lazy sleep tasks for more intelligent `wait_for` tasks.
-
-
-## Problems
-1. The `proxmox_kvm` module is out of date and does not support cloudinit related api calls. Meaning shell commands must be used instead to perform `qm create` tasks. 
-2. The `k8s` module does not support applying Kubernetes Deployments from URL. Instead of using `get_url` to download them first, and then apply them with `k8s`, I just use `shell` to run a `kubectl apply -f`. [Feature Request here](https://github.com/ansible/ansible/issues/48402).
-3. Miscellaneous `qcow2` image issues:
-
-| OS | Issue |
-| -- | ----- |
-| Debian | Kernel Panic on the first boot. Bypassed by stopping and starting a VM after 30 seconds. |
-| CentOS | A nameserver is baked into `/etc/resolv.conf` by default. [Bug Report here](https://bugs.centos.org/view.php?id=15426) |
-| CoreOS | Proxmix issued cloud-init does not seem to configure networking properly. |
-| Ubuntu | Kernel Panic on the first boot. Bypass hack is untested as I prefer Debian. |

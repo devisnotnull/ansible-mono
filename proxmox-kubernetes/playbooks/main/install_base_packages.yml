@@ -6,7 +6,7 @@
         include_vars:
             file: ../../vars.yml
 
-      - name: Waiting for Debian to finish performing automatic updates before continuing.
+      - name: Waiting for Ubuntu to finish performing automatic updates before continuing.
         script: ../../files/bash_scripts/monitor_automatic_updates_status.sh
 
       - name: Performing a Package Upgrade.
@@ -18,14 +18,14 @@
       - name: Installing the base packages.
         become: yes
         apt:
-            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python-pip', 'qemu-guest-agent', 'software-properties-common']
+            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python', 'qemu-guest-agent', 'software-properties-common', 'python3-pip']
             
       - name: Adding the necessary GPG keys.
         become: yes
         apt_key: 
             url: "{{ item }}"
         with_items:
-            - "https://download.docker.com/linux/debian/gpg"
+            - "https://download.docker.com/linux/ubuntu/gpg"
             - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
 
       - name: Adding the necessary Apt repositories.
@@ -33,7 +33,7 @@
         apt_repository:
             repo: "{{ item }}"
         with_items:
-            - "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable"
+            - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
             - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
       - name: Updating the package repositories.
