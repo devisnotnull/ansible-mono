@@ -34,15 +34,15 @@
             --ostype "l26"
             --name {{ item.hn }}
             --description "Kubernetes VM"
-            --ciuser "user"
-            --cipassword "password"
             --agent 1
             --cores {{ item.cpu }}
             --memory {{ item.mem }} 
             --net0 "virtio,bridge=vmbr0"
             --ipconfig0 "gw={{ item.gw }},ip={{ item.ip }}{{ item.sn }}"
             --nameserver {{ item.ns }}
-            --searchdomain {{ item.sd }}
+            --ciuser debian
+            --cipassword password
+            --sshkeys /root/jump_key.pub
         with_items: 
             - { id: "{{ k8s_node1_id }}", hn: "{{ k8s_node1_hn }}", cpu: "{{ k8s_node1_cpu }}", mem: "{{ k8s_node1_mem }}", gw: "{{ k8s_node1_gw }}", ip: "{{ k8s_node1_ip }}", sn: "{{ k8s_node1_sn }}", ns: "{{ k8s_node1_ns }}", sd: "{{ k8s_node1_sd }}" }
             - { id: "{{ k8s_node2_id }}", hn: "{{ k8s_node2_hn }}", cpu: "{{ k8s_node2_cpu }}", mem: "{{ k8s_node2_mem }}", gw: "{{ k8s_node2_gw }}", ip: "{{ k8s_node2_ip }}", sn: "{{ k8s_node2_sn }}", ns: "{{ k8s_node2_ns }}", sd: "{{ k8s_node2_sd }}" }
@@ -73,20 +73,14 @@
 
       - name: Waiting 60 seconds for the disks to provision.
         pause:
-            seconds: 60
+            seconds: 45
 
       - name: Starting the VMs.
         shell: qm start {{ item }}
-        with_items: "{{ id_list }}"
-        
-      - name: Stopping the VMs.
-        shell: qm stop {{ item }}
-        with_items: "{{ id_list }}"
+        with_items: 
+          - "{{ k8s_node1_id }}"
+          - "{{ k8s_node2_id }}"
 
-      - name: Starting the VMs.
-        shell: qm start {{ item }}
-        with_items: "{{ id_list }}"
-
-      - name: Waiting 180 seconds for for buntu to finish booting.
+      - name: Waiting 120 seconds for for buntu to finish booting.
         pause:
-            seconds: 180
+            seconds: 120

@@ -5,16 +5,13 @@
 ###############################################################################################
 
 # img image to use for your Virtual Machines: 
-img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
+img_image: 'https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.qcow2'
 
 # Location to use for storing the img image. Be sure to end the directory with a '/'.
 img_download_location: '/tmp/'
 
 # Resource Pool for your virtual machines.
 k8s_resource_pool: "Kubernetes"
-
-# Path to the SSH Public Key on your Proxmox Server.
-k8s_ssh_key: "/root/.ssh/id_rsa_jump.pub"
 
 # VM IDs
 k8s_master1_id: '4010'
