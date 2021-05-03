@@ -1,8 +1,9 @@
 ---
-- hosts: master      
-  gather_facts: False
+- hosts: mongo_master      
+  gather_facts: true
+  become: true
   roles:
-    - role: elastic.elasticsearch
+    - role: undergreen.mongodb
   tasks:
     - name: Including the variables.
       include_vars:

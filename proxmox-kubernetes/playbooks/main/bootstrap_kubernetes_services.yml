@@ -1,11 +1,11 @@
 ---
-- hosts: k8s_master1
+- hosts: master1
   gather_facts: False
   tasks:
 
       - name: Deploying the Dashboard to Kubernetes.
         become: yes
-        shell: kubectl apply -f {{ k8s_dasboard_url }}
+        shell: kubectl apply -f {{ dasboard_url }}
   
       - name: Configuring RBAC for the Dashboard service account.
         become: yes

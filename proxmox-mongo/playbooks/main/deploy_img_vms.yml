@@ -3,16 +3,16 @@
   gather_facts: False
   vars:
     id_list:
-        - "{{ id }}"  
+        - "{{ master_id }}"  
     id_stg_list:
-        - { id: "{{ id }}", stg: "{{ stg }}" }
+        - { id: "{{ master_id }}", stg: "{{ master_stg }}" }
   tasks:
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
 
       - name: Creating a resource pool.
-        shell: pvesh create /pools -poolid "{{ resource_pool }}" --Comment "Elasticsearch Cluster"
+        shell: pvesh create /pools -poolid "{{ resource_pool }}" --Comment "MongoDB Cluster"
         ignore_errors: yes
 
       - name: Downloading the Ubuntu image.
@@ -26,7 +26,7 @@
             --pool {{ resource_pool }}
             --ostype "l26"
             --name {{ item.hn }}
-            --description "Elasticsearch VM"
+            --description "MongoDB VM"
             --cores {{ item.cpu }}
             --memory {{ item.mem }} 
             --net0 "virtio,bridge=vmbr0"
@@ -37,7 +37,7 @@
             --ciuser user
             --cipassword password
         with_items: 
-            - { id: "{{ id }}", hn: "{{ hn }}", cpu: "{{ cpu }}", mem: "{{ mem }}", gw: "{{ gw }}", ip: "{{ ip }}", sn: "{{ sn }}", ns: "{{ ns }}", sd: "{{ sd }}" }
+            - { id: "{{ master_id }}", hn: "{{ master_hn }}", cpu: "{{ master_cpu }}", mem: "{{ master_mem }}", gw: "{{ master_gw }}", ip: "{{ master_ip }}", sn: "{{ master_sn }}", ns: "{{ master_ns }}", sd: "{{ master_sd }}" }
 
       - name: Importing the img image as a disk.
         shell: qm importdisk {{ item.id }} {{ img_download_location }}image.img {{ item.stg }}
@@ -58,7 +58,7 @@
       - name: Resizing the disk. 
         shell: qm resize {{ item.id }} scsi0 {{ item.size }}
         with_items: 
-            - { id: "{{ id }}", size: "{{ size }}" }
+            - { id: "{{ master_id }}", size: "{{ master_size }}" }
         ignore_errors: no
 
       - name: Waiting 30 seconds for the disks to provision.

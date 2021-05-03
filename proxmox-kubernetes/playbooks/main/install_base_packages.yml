@@ -1,13 +1,10 @@
 ---
-- hosts: k8s_master1:k8s_nodes
+- hosts: master1:nodes
   gather_facts: False
   tasks:            
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
-
-      - name: Waiting for Ubuntu to finish performing automatic updates before continuing.
-        script: ../../files/bash_scripts/monitor_automatic_updates_status.sh
 
       - name: Performing a Package Upgrade.
         become: yes
@@ -18,8 +15,8 @@
       - name: Installing the base packages.
         become: yes
         apt:
-            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python', 'qemu-guest-agent', 'software-properties-common', 'python3-pip']
-            
+            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python', 'qemu-guest-agent', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']    
+
       - name: Adding the necessary GPG keys.
         become: yes
         apt_key: 
@@ -28,37 +25,64 @@
             - "https://download.docker.com/linux/ubuntu/gpg"
             - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
 
+      - name: Add Docker Repository
+        become: yes
+        apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu bionic stable
+          state: present
+
+      - name: Update apt and install docker-ce
+        become: yes
+        apt: update_cache=yes name=docker-ce state=latest
+      
       - name: Adding the necessary Apt repositories.
         become: yes
         apt_repository:
-            repo: "{{ item }}"
+          repo: "{{ item }}"
         with_items:
-            - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-            - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+          - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+          - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
       - name: Updating the package repositories.
         become: yes
         apt: 
-            update_cache: yes
+          update_cache: yes
 
       - name: Installing the required packages to bootstrap a kubernetes cluster.
         become: yes
         apt:
-            name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet', 'kubeadm', 'kubectl']
+          name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet', 'kubeadm', 'kubectl']
+
+      - name: Setting Docker CGroup to systemd.
+        become: yes
+        shell: |
+            cat > /etc/docker/daemon.json <<EOF
+            {
+              "exec-opts": ["native.cgroupdriver=systemd"],
+              "log-driver": "json-file",
+              "log-opts": {
+                "max-size": "100m"
+              },
+              "storage-driver": "overlay2"
+            }
+            EOF
 
       - name: Installing the necessary Python library dependencies to use the `k8s` Ansible module.
         become: yes
         pip:
-            name: ['openshift', 'kubernetes', 'pyyaml', 'requests']
-            extra_args: --upgrade
+          name: ['openshift', 'kubernetes', 'pyyaml', 'requests']
+          extra_args: --upgrade
 
       - name: Enabling the necessary Systemd modules.
         become: yes
         systemd: 
-            state: started
-            name: "{{ item }}"
-            enabled: yes
+          state: started
+          name: "{{ item }}"
+          enabled: yes
         with_items:
-            - "docker"
-            - "kubelet"
-            - "qemu-guest-agent"
+          - "docker"
+          - "kubelet"
+          - "qemu-guest-agent"
+
+      - name: Waiting for Debian to finish performing automatic updates before continuing.
+        script: ../../files/bash_scripts/docker.sh

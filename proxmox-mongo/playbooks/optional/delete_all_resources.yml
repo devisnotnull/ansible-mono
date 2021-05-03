@@ -4,9 +4,6 @@
   vars:
     id_list:
         - "{{ master_id }}"
-        - "{{ node1_id }}"
-        - "{{ node2_id }}"
-        - "{{ node3_id }}" 
   tasks: 
       - name: Including the variables.
         include_vars:
@@ -25,15 +22,8 @@
       - name: Deleting the Resource Pool.
         shell: pvesh delete /pools/{{ resource_pool }}
 
-      - name: Deleting the Ubuntu img image.
+      - name: Deleting the Debian img image.
         file:
             path: "/tmp/image.img"
-            state: absent
-        ignore_errors: yes
-
-      - name: Deleting the ~/.kube directory.
-        local_action:
-            module: file
-            path: ~/.kube
             state: absent
         ignore_errors: yes

@@ -3,7 +3,7 @@
   gather_facts: False
   vars:
     id_list:
-        - "{{ elk_id }}"
+        - "{{ id }}"
   tasks: 
       - name: Including the variables.
         include_vars:
@@ -20,7 +20,7 @@
         ignore_errors: yes
 
       - name: Deleting the Resource Pool.
-        shell: pvesh delete /pools/{{ elk_resource_pool }}
+        shell: pvesh delete /pools/{{ resource_pool }}
 
       - name: Deleting the Debian img image.
         file:

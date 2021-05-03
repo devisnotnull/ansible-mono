@@ -1,5 +1,5 @@
 ---
-- hosts: hosts
+- hosts: mongo_master
   gather_facts: true
   tasks:
     - name: Including the variables.

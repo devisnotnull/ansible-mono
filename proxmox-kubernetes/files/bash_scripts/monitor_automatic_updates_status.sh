@@ -1,5 +1,5 @@
 #!/bin/bash  
-#Debian automatically checks for updates on first boot. This ensures that has completed before continuing.
+#ubuntu automatically checks for updates on first boot. This ensures that has completed before continuing.
 #If it hasn't finished in 10 minutes, the script will exit ungracefully.
 timeout=$(($(date +%s) + 600))
 
