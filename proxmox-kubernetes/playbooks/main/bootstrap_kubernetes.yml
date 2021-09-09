@@ -9,19 +9,20 @@
       - name: Initializing Kubernetes on the master.
         become: yes
         shell: |
-            kubeadm init \
-                --kubernetes-version="v1.20.0" \
-                --pod-network-cidr=172.16.0.0/16
+            kubeadm init --pod-network-cidr=172.16.0.0/16
 
-      - name: Creating a kube directory on the master for the config files.
+      - name: Configure kubeconfig
         become: yes
-        file:
-            path: $HOME/.kube
-            state: directory
+        shell: |
+          mkdir -p $HOME/.kube
+          sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+          sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-      - name: Copying the kube config to the kube directory.
-        become: yes
-        shell: cp /etc/kubernetes/admin.conf $HOME/.kube/config
+      - name: Configure kubeconfig
+        shell: |
+          mkdir -p $HOME/.kube
+          sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+          sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
       - name: Downloading the Calico Pod Network manifest.
         get_url:
@@ -38,31 +39,11 @@
         become: yes
         shell: kubectl apply -f /tmp/calico.yml
 
-      - name: Deleting the Calico Pod Network manifest from disk.
-        file:
-            path: /tmp/calico.yml
-            state: absent
-
-      - name: Retreiving the kube config.
-        become: yes
-        shell: cat ~/.kube/config
-        register: config
-
-      - name: Creating a local ~/.kube directory on your workstation.
-        local_action:
-            module: file
-            path: ~/.kube
-            state: directory
-
-      - name: Copying ~/.kube/config to your workstation.
-        local_action: copy content={{ config.stdout }} dest=~/.kube/config
-
       - name: Retreiving the kubeadm join command.
         become: yes
         shell: kubeadm token create --print-join-command
         when: join_command is undefined
         register: join_command
-
 
 - hosts: nodes
   gather_facts: False
@@ -73,4 +54,4 @@
 
       - name: Joining the nodes to the master.
         become: yes
-        shell: "{{ hostvars[groups['master'][0]]['join_command']['stdout'] }} --ignore-preflight-errors=all"
+        shell: "{{ hostvars[groups['master1'][0]]['join_command']['stdout'] }} --ignore-preflight-errors=all"

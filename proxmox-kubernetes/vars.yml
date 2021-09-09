@@ -22,7 +22,7 @@ docker_version: '5:19.03.11~3-0~debian-buster'
 
 # The version of Kubernetes to install.
 # The newest release can be found here: https://kubernetes.io/docs/setup/release/notes/
-kubernetes_version: "v1.20.1"
+kubernetes_version: "v1.22.0"
 
 # VM IDs
 master_id: '4010'
@@ -55,10 +55,10 @@ node2_size: "50G"
 node3_size: "50G"
 
 # IP Addresses
-master_ip: "10.10.10.100"
-node1_ip: "10.10.10.110"
-node2_ip: "10.10.10.111"
-node3_ip: "10.10.10.112"
+master_ip: "10.150.10.10"
+node1_ip: "10.150.10.20"
+node2_ip: "10.150.10.21"
+node3_ip: "10.150.10.22"
 
 # Subnet Sizes
 master_sn: "/24"
@@ -67,16 +67,16 @@ node2_sn: "/24"
 node3_sn: "/24"
 
 # Network Gateway
-master_gw: "10.10.10.1"
-node1_gw: "10.10.10.1"
-node2_gw: "10.10.10.1"
-node3_gw: "10.10.10.1"
+master_gw: "10.150.10.1"
+node1_gw: "10.150.10.1"
+node2_gw: "10.150.10.1"
+node3_gw: "10.150.10.1"
 
 # DNS Servers
-master_ns: "10.10.10.1"
-node1_ns: "10.10.10.1"
-node2_ns: "10.10.10.1"
-node3_ns: "10.10.10.1"
+master_ns: "10.150.10.1"
+node1_ns: "10.150.10.1"
+node2_ns: "10.150.10.1"
+node3_ns: "10.150.10.1"
 
 # Search Domains
 master_sd: "internal"
@@ -91,17 +91,17 @@ node2_bridge: "vmbr0"
 node3_bridge: "vmbr0"
 
 # Storage volumes
-master_stg: "iscsilvm"
-node1_stg: "iscsilvm"
-node2_stg: "iscsilvm"
-node3_stg: "iscsilvm"
+master_stg: "proxmox-01"
+node1_stg: "proxmox-01"
+node2_stg: "proxmox-01"
+node3_stg: "proxmox-01"
 
 # CIDR for the Calico Pod Network - MUST be different from your Kubernetes CIDR to avoid an IP conflict. Subnet size will automatically be set to /16.
 calico_cidr: '172.16.0.0'
 
 # URL for the Calico Network Policy: 
 # Can be found here: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#tabs-pod-install-1
-calico_policy_url: 'https://docs.projectcalico.org/v3.11/manifests/calico.yaml'
+calico_policy_url: 'https://docs.projectcalico.org/v3.19/manifests/calico.yaml'
 
 # The URL for the Kubernetes Dashboard Manifest. Not locally hosted as it changes frequently.
 # Can be found in the `Getting Started` section of this page: https://github.com/kubernetes/dashboard/blob/master1/README.md
@@ -111,20 +111,6 @@ dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio
 user_name: 'devnotnull'
 
 ###############################################################################################
-#                                        -VLAN Options-                                       # 
-###############################################################################################
-# These parameters are only required if your network is configured with VLANs and you wish to #
-# specify which VLAN each of your Kubernetes nodes is allocated to. Leave these variables     #
-# blank if you do not intend to use VLANs for your cluster.                                   #
-###############################################################################################
-
-# VLAN Tags
-master_vlan: "40"
-node1_vlan: "40"
-node2_vlan: "40"
-node3_vlan: "40"
-
-###############################################################################################
 #                                        -NFS Options-                                        # 
 ###############################################################################################
 # These parameters are only required if you have an NFS server and would like to enable the   #
@@ -132,7 +118,7 @@ node3_vlan: "40"
 ###############################################################################################
 
 # NFS server
-nfs_hostname: 'nfs.k8.devnotnull.com'
+nfs_hostname: 'nas.devnotnull.com'
 
 # NFS Mount Point
 nfs_mount_point: ' /mnt/NFSPool/iocage/s3'

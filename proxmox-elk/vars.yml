@@ -11,20 +11,17 @@ img_image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-
 # Location to use for storing the img image. Be sure to end the directory with a '/'.
 img_download_location: '/tmp/'
 
-# Resource Pool for your virtual machines.
-resource_pool: "MongoDB"
-
 # Path to the SSH Public Key on your Proxmox Server.
 ssh_key: '/etc/pve/priv/authorized_keys'
 
 # Resource Pool for your virtual machines.
-resource_pool: "Elasticsearch"
+resource_pool: "Elk"
 
 # VM IDs
 id: '5500'
 
 ## Descriptive Name
-name: 'ELK'
+name: 'Elk'
 
 # Hostnames
 hn: "elk.devnotnull.com"
@@ -39,7 +36,7 @@ mem: "8192"
 size: "100G"
 
 # IP Addresses
-ip: "10.10.10.125"
+ip: "10.10.10.185"
 
 # Subnet Sizes
 sn: "/24"
@@ -57,15 +54,28 @@ sd: "devnotnull.com"
 bridge: "vmbr0"
 
 # Storage volumes
-stg: "iscsilvm"
+stg: "proxmox-01"
 
 ###########
 
-es_version: "7.12.1"
+elasticsearch_version: '7.12.1'
+
+elasticsearch_package_state: present
+
+elasticsearch_service_state: started
+elasticsearch_service_enabled: true
+
+elasticsearch_network_host: localhost
+elasticsearch_http_port: 9200
+
+elasticsearch_heap_size_min: 1g
+elasticsearch_heap_size_max: 2g
+
+elasticsearch_extra_options: ''
 
 ###########
 
-kibana_version: "7.x"
+kibana_version: "7.12.1"
 
 kibana_package: kibana
 kibana_package_state: present
@@ -85,7 +95,7 @@ kibana_elasticsearch_password: ""
 
 ############
 
-logstash_version: '7.x'
+logstash_version: '7.12.1'
 
 logstash_listen_port_beats: 5044
 
@@ -106,3 +116,8 @@ logstash_enabled_on_boot: true
 logstash_install_plugins:
   - logstash-input-beats
   - logstash-filter-multiline
+
+####
+
+metricbeat_deb: '7.12.1'
+metricbeat_version: 'https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-7.12.1-amd64.deb'

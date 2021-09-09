@@ -1,5 +1,0 @@
----
-- import_playbook: playbooks/main/deploy_img_vms.yml
-- import_playbook: playbooks/main/install_base_packages.yml
-- import_playbook: playbooks/main/es.yml
-

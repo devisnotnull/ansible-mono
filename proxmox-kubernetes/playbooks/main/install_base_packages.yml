@@ -22,26 +22,16 @@
         apt_key: 
             url: "{{ item }}"
         with_items:
-            - "https://download.docker.com/linux/ubuntu/gpg"
+            - "https://download.docker.com/linux/debian/gpg"
             - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
 
-      - name: Add Docker Repository
-        become: yes
-        apt_repository:
-          repo: deb https://download.docker.com/linux/ubuntu bionic stable
-          state: present
-
-      - name: Update apt and install docker-ce
-        become: yes
-        apt: update_cache=yes name=docker-ce state=latest
-      
       - name: Adding the necessary Apt repositories.
         become: yes
         apt_repository:
-          repo: "{{ item }}"
+            repo: "{{ item }}"
         with_items:
-          - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-          - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+            - "deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable"
+            - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
       - name: Updating the package repositories.
         become: yes
@@ -51,27 +41,34 @@
       - name: Installing the required packages to bootstrap a kubernetes cluster.
         become: yes
         apt:
-          name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet', 'kubeadm', 'kubectl']
-
-      - name: Setting Docker CGroup to systemd.
-        become: yes
-        shell: |
-            cat > /etc/docker/daemon.json <<EOF
-            {
-              "exec-opts": ["native.cgroupdriver=systemd"],
-              "log-driver": "json-file",
-              "log-opts": {
-                "max-size": "100m"
-              },
-              "storage-driver": "overlay2"
-            }
-            EOF
+            name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet=1.21.0-00', 'kubeadm=1.21.0-00', 'kubectl=1.21.0-00']
 
       - name: Installing the necessary Python library dependencies to use the `k8s` Ansible module.
         become: yes
         pip:
           name: ['openshift', 'kubernetes', 'pyyaml', 'requests']
           extra_args: --upgrade
+
+      - name: Run expect to wait for a successful PXE boot via out-of-band CIMC
+        become: yes
+        shell: |
+          cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+          overlay
+          br_netfilter
+          EOF
+
+          sudo modprobe overlay
+          sudo modprobe br_netfilter
+
+          # Setup required sysctl params, these persist across reboots.
+          cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.ipv4.ip_forward                 = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+          EOF
+
+          # Apply sysctl params without reboot
+          sudo sysctl --system
 
       - name: Enabling the necessary Systemd modules.
         become: yes
@@ -80,7 +77,6 @@
           name: "{{ item }}"
           enabled: yes
         with_items:
-          - "docker"
           - "kubelet"
           - "qemu-guest-agent"
 

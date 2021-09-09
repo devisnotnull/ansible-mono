@@ -51,7 +51,7 @@ master_sd: "devnotnull.com"
 master_bridge: "vmbr0"
 
 # Storage volumes
-master_stg: "iscsilvm"
+master_stg: "nfs"
 
 ####
 # This variable is used to set source of MongoDB installation.

@@ -1,0 +1,57 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+# Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
+img_image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+img_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+resource_pool: "Util"
+
+# Path to the SSH Public Key on your Proxmox Server.
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# VM IDs
+id: '7800'
+
+## Descriptive Name
+name: 'Util'
+
+# Hostnames
+hn: "util.devnotnull.com"
+
+# Number of CPUs
+cpu: "2"
+
+# Amount of memory expressed in megabytes
+mem: "4096"
+
+# Disk Sizes
+size: "50G"
+
+# IP Addresses
+ip: "10.10.10.132"
+
+# Subnet Sizes
+sn: "/24"
+
+# Network Gateway
+gw: "10.10.10.1"
+
+# DNS Servers
+ns: "10.10.10.1"
+
+# Search Domains
+sd: "devnotnull.com"
+
+# Network Bridges
+bridge: "vmbr0"
+
+# Storage volumes
+stg: "nfs"

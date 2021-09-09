@@ -1,0 +1,22 @@
+---
+- hosts: unifi_hosts
+  gather_facts: true
+  tasks:
+    - name: Including the variables.
+      include_vars:
+          file: ../../vars.yml
+
+    - name: Performing a Package Upgrade.
+      become: yes
+      apt:
+          name: '*'
+          state: latest
+
+    - name: Get unify install
+      become: yes
+      shell: wget https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh 
+
+    - name: Install unify
+      become: yes
+      shell: bash unifi-latest.sh  --skip --fqdn ui.devnotnull.com:www.ui.devnotnull.com --email alexbrown201@googlemail.com
+      

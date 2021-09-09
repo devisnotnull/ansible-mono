@@ -1,0 +1,14 @@
+---
+- hosts: grafana_hosts
+  become: true
+  gather_facts: true
+  roles:
+    - role: geerlingguy.redis
+      vars:
+        grafana_security:
+          admin_user: admin
+          admin_password: password
+  tasks:
+    - name: Including the variables.
+      include_vars:
+          file: ../../vars.yml

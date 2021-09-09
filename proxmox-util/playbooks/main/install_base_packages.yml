@@ -1,0 +1,18 @@
+---
+- hosts: util_hosts
+  gather_facts: true
+  tasks:
+    - name: Including the variables.
+      include_vars:
+          file: ../../vars.yml
+
+    - name: Performing a Package Upgrade.
+      become: yes
+      apt:
+          name: '*'
+          state: latest
+
+    - name: Installing the required packages to bootstrap a kubernetes cluster.
+      become: yes
+      apt:
+        name: ['iperf3']

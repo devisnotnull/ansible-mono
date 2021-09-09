@@ -1,9 +1,0 @@
----
-- hosts: master      
-  gather_facts: False
-  roles:
-    - role: elastic.elasticsearch
-  tasks:
-    - name: Including the variables.
-      include_vars:
-          file: ../../vars.yml
