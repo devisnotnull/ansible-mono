@@ -1,0 +1,10 @@
+---
+- hosts: mongo_master      
+  gather_facts: true
+  become: true
+  roles:
+    - role: undergreen.mongodb
+  tasks:
+    - name: Including the variables.
+      include_vars:
+          file: ../../vars.yml

@@ -1,0 +1,109 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+# Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
+img_image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+img_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+resource_pool: "Redis"
+
+# Path to the SSH Public Key on your Proxmox Server.
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# VM IDs
+id: '7500'
+
+## Descriptive Name
+name: 'ELK'
+
+# Hostnames
+hn: "redis.devnotnull.com"
+
+# Number of CPUs
+cpu: "2"
+
+# Amount of memory expressed in megabytes
+mem: "4096"
+
+# Disk Sizes
+size: "100G"
+
+# IP Addresses
+ip: "10.10.10.126"
+
+# Subnet Sizes
+sn: "/24"
+
+# Network Gateway
+gw: "10.10.10.1"
+
+# DNS Servers
+ns: "10.10.10.1"
+
+# Search Domains
+sd: "devnotnull.com"
+
+# Network Bridges
+bridge: "vmbr0"
+
+# Storage volumes
+stg: "nfs"
+
+#############
+
+redis_port: 6379
+redis_bind_interface: 0.0.0.1
+redis_unixsocket: ''
+redis_timeout: 300
+
+redis_loglevel: "notice"
+redis_logfile: /var/log/redis/redis-server.log
+
+redis_databases: 16
+
+# Set to an empty set to disable persistence (saving the DB to disk).
+redis_save:
+  - 900 1
+  - 300 10
+  - 60 10000
+
+redis_rdbcompression: "yes"
+redis_dbfilename: dump.rdb
+redis_dbdir: /var/lib/redis
+
+redis_maxmemory: 0
+redis_maxmemory_policy: "noeviction"
+redis_maxmemory_samples: 5
+
+redis_appendonly: "no"
+redis_appendfsync: "everysec"
+
+# Add extra include files for local configuration/overrides.
+redis_includes: []
+
+# Require authentication to Redis with a password.
+redis_requirepass: ""
+
+# Disable certain Redis commands for security reasons.
+redis_disabled_commands: []
+#  - FLUSHDB
+#  - FLUSHALL
+#  - KEYS
+#  - PEXPIRE
+#  - DEL
+#  - CONFIG
+#  - SHUTDOWN
+#  - BGREWRITEAOF
+#  - BGSAVE
+#  - SAVE
+#  - SPOP
+#  - SREM
+#  - RENAME
+#  - DEBUG

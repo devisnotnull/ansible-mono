@@ -1,0 +1,13 @@
+---
+- hosts: mongo_master
+  gather_facts: true
+  tasks:
+    - name: Including the variables.
+      include_vars:
+          file: ../../vars.yml
+
+    - name: Performing a Package Upgrade.
+      become: yes
+      apt:
+          name: '*'
+          state: latest

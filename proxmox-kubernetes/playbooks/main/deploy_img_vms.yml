@@ -3,92 +3,75 @@
   gather_facts: False
   vars:
     id_list:
-        - "{{ k8s_master1_id }}"
-        - "{{ k8s_node1_id }}"
-        - "{{ k8s_node2_id }}"
-        - "{{ k8s_node3_id }}"      
+        - "{{ master_id }}"
+        - "{{ node1_id }}"
+        - "{{ node2_id }}"
+        - "{{ node3_id }}"
     id_stg_list:
-        - { id: "{{ k8s_master1_id }}", stg: "{{ k8s_master1_stg }}" }
-        - { id: "{{ k8s_node1_id }}", stg: "{{ k8s_node1_stg }}" }
-        - { id: "{{ k8s_node2_id }}", stg: "{{ k8s_node2_stg }}" }
-        - { id: "{{ k8s_node3_id }}", stg: "{{ k8s_node3_stg }}" }      
+        - { id: "{{ master_id }}", stg: "{{ master_stg }}" }
+        - { id: "{{ node1_id }}", stg: "{{ node1_stg }}" }
+        - { id: "{{ node2_id }}", stg: "{{ node2_stg }}" }
+        - { id: "{{ node3_id }}", stg: "{{ node3_stg }}" }
   tasks:
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
 
       - name: Creating a resource pool.
-        shell: pvesh create /pools -poolid "{{ k8s_resource_pool }}" --Comment "Kubernetes Cluster"
+        shell: pvesh create /pools -poolid "{{ resource_pool }}" --Comment "Kubernetes Cluster"
         ignore_errors: yes
 
-      - name: Downloading the Ubuntu qcow2 image.
+      - name: Downloading the ubuntu qcow2 image.
         get_url:
-            url: "{{ img_image }}"
-            dest: "{{ img_download_location }}image.qcow2"
+            url: "{{ image }}"
+            dest: "{{ image_download_location }}image.qcow2"
 
       - name: Creating the VMs.
         shell: >
             qm create {{ item.id }}
-            --pool {{ k8s_resource_pool }}
+            --pool {{ resource_pool }}
             --ostype "l26"
             --name {{ item.hn }}
             --description "Kubernetes VM"
             --agent 1
             --cores {{ item.cpu }}
-            --memory {{ item.mem }} 
-            --net0 "virtio,bridge=vmbr0"
-            --sshkeys "{{ k8s_ssh_key }}"
+            --memory {{ item.mem }}
+            --net0 "virtio,bridge={{ item.bridge }},tag=900"
             --ipconfig0 "gw={{ item.gw }},ip={{ item.ip }}{{ item.sn }}"
             --nameserver {{ item.ns }}
             --searchdomain {{ item.sd }}
+            --sshkeys {{ ssh_key }}
+        with_items:
+            - { id: "{{ master_id }}", hn: "{{ master_hn }}", cpu: "{{ master_cpu }}", mem: "{{ master_mem }}", bridge: "{{ master_bridge }}", gw: "{{ master_gw }}", ip: "{{ master_ip }}", sn: "{{ master_sn }}", ns: "{{ master_ns }}", sd: "{{ master_sd }}" }
+            - { id: "{{ node1_id }}", hn: "{{ node1_hn }}", cpu: "{{ node1_cpu }}", mem: "{{ node1_mem }}", bridge: "{{ node1_bridge }}", gw: "{{ node1_gw }}", ip: "{{ node1_ip }}", sn: "{{ node1_sn }}", ns: "{{ node1_ns }}", sd: "{{ node1_sd }}" }
+            - { id: "{{ node2_id }}", hn: "{{ node2_hn }}", cpu: "{{ node2_cpu }}", mem: "{{ node2_mem }}", bridge: "{{ node2_bridge }}", gw: "{{ node2_gw }}", ip: "{{ node2_ip }}", sn: "{{ node2_sn }}", ns: "{{ node2_ns }}", sd: "{{ node2_sd }}" }
+            - { id: "{{ node3_id }}", hn: "{{ node3_hn }}", cpu: "{{ node3_cpu }}", mem: "{{ node3_mem }}", bridge: "{{ node3_bridge }}", gw: "{{ node3_gw }}", ip: "{{ node3_ip }}", sn: "{{ node3_sn }}", ns: "{{ node3_ns }}", sd: "{{ node3_sd }}" }
 
-        with_items: 
-            - { id: "{{ k8s_master1_id }}", hn: "{{ k8s_master1_hn }}", cpu: "{{ k8s_master1_cpu }}", mem: "{{ k8s_master1_mem }}", gw: "{{ k8s_master1_gw }}", ip: "{{ k8s_master1_ip }}", sn: "{{ k8s_master1_sn }}", ns: "{{ k8s_master1_ns }}", sd: "{{ k8s_master1_sd }}" }
-            - { id: "{{ k8s_node1_id }}", hn: "{{ k8s_node1_hn }}", cpu: "{{ k8s_node1_cpu }}", mem: "{{ k8s_node1_mem }}", gw: "{{ k8s_node1_gw }}", ip: "{{ k8s_node1_ip }}", sn: "{{ k8s_node1_sn }}", ns: "{{ k8s_node1_ns }}", sd: "{{ k8s_node1_sd }}" }
-            - { id: "{{ k8s_node2_id }}", hn: "{{ k8s_node2_hn }}", cpu: "{{ k8s_node2_cpu }}", mem: "{{ k8s_node2_mem }}", gw: "{{ k8s_node2_gw }}", ip: "{{ k8s_node2_ip }}", sn: "{{ k8s_node2_sn }}", ns: "{{ k8s_node2_ns }}", sd: "{{ k8s_node2_sd }}" }
-            - { id: "{{ k8s_node3_id }}", hn: "{{ k8s_node3_hn }}", cpu: "{{ k8s_node3_cpu }}", mem: "{{ k8s_node3_mem }}", gw: "{{ k8s_node3_gw }}", ip: "{{ k8s_node3_ip }}", sn: "{{ k8s_node3_sn }}", ns: "{{ k8s_node3_ns }}", sd: "{{ k8s_node3_sd }}" }
-
-      - name: Importing the img image as a disk.
-        shell: qm importdisk {{ item.id }} {{ img_download_location }}image.qcow2 {{ item.stg }}
+      - name: Importing the qcow2 image as a disk.
+        shell: qm importdisk {{ item.id }} {{ image_download_location }}image.qcow2 {{ item.stg }}
         with_items: "{{ id_stg_list }}"
 
       - name: Configuring the VM Hardware.
         shell: qm set {{ item.id }}
-                --scsihw virtio-scsi-pci
-                --scsi0 {{ item.stg }}:vm-{{ item.id }}-disk-0
-                --ide2 {{ item.stg }}:cloudinit
-                --boot c --bootdisk scsi0
-                --serial0 socket 
-                --sshkeys "{{ k8s_ssh_key }}"
-                --ciuser user
-                --cipassword "password"
+               --cipassword password
+               --scsihw virtio-scsi-pci
+               --scsi0 {{ item.stg }}:vm-{{ item.id }}-disk-0
+               --ide2 {{ item.stg }}:cloudinit
+               --boot c --bootdisk scsi0
         with_items: "{{ id_stg_list }}"
 
-      - name: Resizing the disk. 
+      - name: Resizing the disk.
         shell: qm resize {{ item.id }} scsi0 {{ item.size }}
-        with_items: 
-            - { id: "{{ k8s_master1_id }}", size: "{{ k8s_master1_size }}" }
-            - { id: "{{ k8s_node1_id }}", size: "{{ k8s_node1_size }}" }
-            - { id: "{{ k8s_node2_id }}", size: "{{ k8s_node2_size }}" }
-            - { id: "{{ k8s_node3_id }}", size: "{{ k8s_node3_size }}" }
-        ignore_errors: yes
-
-      - name: Waiting 60 seconds for the disks to provision.
-        pause:
-            seconds: 60
-
-      - name: Starting the VMs.
-        shell: qm start {{ item }}
-        with_items: "{{ id_list }}"
-        
-      - name: Stopping the VMs.
-        shell: qm stop {{ item }}
-        with_items: "{{ id_list }}"
+        with_items:
+            - { id: "{{ master_id }}", size: "{{ master_size }}" }
+            - { id: "{{ node1_id }}", size: "{{ node1_size }}" }
+            - { id: "{{ node2_id }}", size: "{{ node2_size }}" }
+            - { id: "{{ node3_id }}", size: "{{ node3_size }}" }
 
       - name: Starting the VMs.
         shell: qm start {{ item }}
         with_items: "{{ id_list }}"
 
-      - name: Waiting 240 seconds for for Debian to finish booting.
+      - name: Waiting 2 minutes for for ubuntu to finish booting.
         pause:
-            seconds: 240
+            seconds: 120

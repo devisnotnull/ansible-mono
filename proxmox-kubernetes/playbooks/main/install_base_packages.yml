@@ -1,13 +1,10 @@
 ---
-- hosts: k8s_master1:k8s_nodes
+- hosts: master1:nodes
   gather_facts: False
   tasks:            
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
-
-      - name: Waiting for Debian to finish performing automatic updates before continuing.
-        script: ../../files/bash_scripts/monitor_automatic_updates_status.sh
 
       - name: Performing a Package Upgrade.
         become: yes
@@ -18,8 +15,8 @@
       - name: Installing the base packages.
         become: yes
         apt:
-            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python-pip', 'qemu-guest-agent', 'software-properties-common']
-            
+            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python', 'qemu-guest-agent', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']    
+
       - name: Adding the necessary GPG keys.
         become: yes
         apt_key: 
@@ -33,32 +30,55 @@
         apt_repository:
             repo: "{{ item }}"
         with_items:
-            - "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable"
+            - "deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable"
             - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
       - name: Updating the package repositories.
         become: yes
         apt: 
-            update_cache: yes
+          update_cache: yes
 
       - name: Installing the required packages to bootstrap a kubernetes cluster.
         become: yes
         apt:
-            name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet', 'kubeadm', 'kubectl']
+            name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet=1.21.0-00', 'kubeadm=1.21.0-00', 'kubectl=1.21.0-00']
 
       - name: Installing the necessary Python library dependencies to use the `k8s` Ansible module.
         become: yes
         pip:
-            name: ['openshift', 'kubernetes', 'pyyaml', 'requests']
-            extra_args: --upgrade
+          name: ['openshift', 'kubernetes', 'pyyaml', 'requests']
+          extra_args: --upgrade
+
+      - name: Run expect to wait for a successful PXE boot via out-of-band CIMC
+        become: yes
+        shell: |
+          cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+          overlay
+          br_netfilter
+          EOF
+
+          sudo modprobe overlay
+          sudo modprobe br_netfilter
+
+          # Setup required sysctl params, these persist across reboots.
+          cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.ipv4.ip_forward                 = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+          EOF
+
+          # Apply sysctl params without reboot
+          sudo sysctl --system
 
       - name: Enabling the necessary Systemd modules.
         become: yes
         systemd: 
-            state: started
-            name: "{{ item }}"
-            enabled: yes
+          state: started
+          name: "{{ item }}"
+          enabled: yes
         with_items:
-            - "docker"
-            - "kubelet"
-            - "qemu-guest-agent"
+          - "kubelet"
+          - "qemu-guest-agent"
+
+      - name: Waiting for Debian to finish performing automatic updates before continuing.
+        script: ../../files/bash_scripts/docker.sh

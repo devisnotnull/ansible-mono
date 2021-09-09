@@ -6,55 +6,118 @@
 
 # img image to use for your Virtual Machines: 
 # Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
-img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
+img_image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
 
 # Location to use for storing the img image. Be sure to end the directory with a '/'.
 img_download_location: '/tmp/'
 
 # Path to the SSH Public Key on your Proxmox Server.
-elk_ssh_key_host: "/root/.ssh/id_rsa.pub"
-elk_ssh_key: "/root/.ssh/id_rsa.pub"
-provision_ssh_key: "/root/.ssh/id_rsa_desktop.pub"
+ssh_key: '/etc/pve/priv/authorized_keys'
 
 # Resource Pool for your virtual machines.
-elk_resource_pool: "Elasticsearch"
+resource_pool: "Elk"
 
 # VM IDs
-elk_id: '5011'
+id: '5500'
 
 ## Descriptive Name
-elk_name: 'ELK'
+name: 'Elk'
 
 # Hostnames
-elk_hn: "elk.devnotnull.com"
+hn: "elk.devnotnull.com"
 
 # Number of CPUs
-elk_cpu: "2"
+cpu: "2"
 
 # Amount of memory expressed in megabytes
-elk_mem: "8192"
+mem: "8192"
 
 # Disk Sizes
-elk_size: "100G"
+size: "100G"
 
 # IP Addresses
-elk_ip: "10.10.10.122"
+ip: "10.10.10.185"
 
 # Subnet Sizes
-elk_sn: "/24"
+sn: "/24"
 
 # Network Gateway
-elk_gw: "10.10.10.1"
+gw: "10.10.10.1"
 
 # DNS Servers
-elk_ns: "10.10.10.1"
+ns: "10.10.10.1"
 
 # Search Domains
-elk_sd: "devnotnull.com"
+sd: "devnotnull.com"
 
 # Network Bridges
-elk_bridge: "vmbr1"
+bridge: "vmbr0"
 
 # Storage volumes
-elk_stg: "group1"
+stg: "proxmox-01"
 
+###########
+
+elasticsearch_version: '7.12.1'
+
+elasticsearch_package_state: present
+
+elasticsearch_service_state: started
+elasticsearch_service_enabled: true
+
+elasticsearch_network_host: localhost
+elasticsearch_http_port: 9200
+
+elasticsearch_heap_size_min: 1g
+elasticsearch_heap_size_max: 2g
+
+elasticsearch_extra_options: ''
+
+###########
+
+kibana_version: "7.12.1"
+
+kibana_package: kibana
+kibana_package_state: present
+
+kibana_service_state: started
+kibana_service_enabled: true
+
+kibana_config_template: kibana.yml.j2
+kibana_config_file_path: /etc/kibana/kibana.yml
+
+kibana_server_port: 5601
+kibana_server_host: "0.0.0.0"
+
+kibana_elasticsearch_url: "http://localhost:9200"
+kibana_elasticsearch_username: ""
+kibana_elasticsearch_password: ""
+
+############
+
+logstash_version: '7.12.1'
+
+logstash_listen_port_beats: 5044
+
+logstash_elasticsearch_hosts:
+  - http://localhost:9200
+
+logstash_local_syslog_path: /var/log/syslog
+logstash_monitor_local_syslog: true
+
+logstash_dir: /usr/share/logstash
+
+logstash_ssl_dir: /etc/pki/logstash
+logstash_ssl_certificate_file: ""
+logstash_ssl_key_file: ""
+
+logstash_enabled_on_boot: true
+
+logstash_install_plugins:
+  - logstash-input-beats
+  - logstash-filter-multiline
+
+####
+
+metricbeat_deb: '7.12.1'
+metricbeat_version: 'https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-7.12.1-amd64.deb'

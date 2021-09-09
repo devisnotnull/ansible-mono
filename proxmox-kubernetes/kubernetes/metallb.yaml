@@ -6,7 +6,7 @@ metadata:
 data:
   config: |
     address-pools:
-    - name: my-ip-space
+    - name: super-private-pool
       protocol: layer2
       addresses:
-      - 10.10.10.150-10.10.10.200
+      - 10.150.10.100-10.10.10.250

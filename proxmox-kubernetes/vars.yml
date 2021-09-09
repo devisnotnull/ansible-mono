@@ -5,117 +5,110 @@
 ###############################################################################################
 
 # img image to use for your Virtual Machines: 
-# Can be found here: https://cdimage.debian.org/cdimage/openstack/current/?C=M;O=A 
-img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
+image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
 
 # Location to use for storing the img image. Be sure to end the directory with a '/'.
-img_download_location: '/tmp/'
+image_download_location: '/tmp/'
 
 # Resource Pool for your virtual machines.
-k8s_resource_pool: "Kubernetes"
+resource_pool: "Kubernetes"
 
-# Path to the SSH Public Key on your Proxmox Server.
-k8s_ssh_key: "/root/.ssh/authorized_keys"
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# The version of Docker to use on the hosts.
+# Make sure the version is listed here: https://kubernetes.io/docs/setup/release/notes/
+# You can list available versions with: `aptitude versions docker-ce`
+docker_version: '5:19.03.11~3-0~debian-buster'
+
+# The version of Kubernetes to install.
+# The newest release can be found here: https://kubernetes.io/docs/setup/release/notes/
+kubernetes_version: "v1.22.0"
 
 # VM IDs
-k8s_master1_id: '4010'
-k8s_node1_id: '40100'
-k8s_node2_id: '40101'
-k8s_node3_id: '40102'
+master_id: '4010'
+node1_id: '40100'
+node2_id: '40101'
+node3_id: '40102'
 
 # Hostnames
-k8s_master1_hn: "master1.k8.devnotnull.com"
-k8s_node1_hn: "minion1.k8.devnotnull.com"
-k8s_node2_hn: "minion2.k8.devnotnull.com"
-k8s_node3_hn: "minion3.k8.devnotnull.com"
+master_hn: "master1.k8"
+node1_hn: "minion1.k8"
+node2_hn: "minion2.k8"
+node3_hn: "minion3.k8"
 
 # Number of CPUs
-k8s_master1_cpu: "2"
-k8s_node1_cpu: "4"
-k8s_node2_cpu: "4"
-k8s_node3_cpu: "4"
+master_cpu: "2"
+node1_cpu: "4"
+node2_cpu: "4"
+node3_cpu: "4"
 
 # Amount of memory expressed in megabytes
-k8s_master1_mem: "8192"
-k8s_node1_mem: "8192"
-k8s_node2_mem: "8192"
-k8s_node3_mem: "8192"
+master_mem: "8192"
+node1_mem: "8192"
+node2_mem: "8192"
+node3_mem: "8192"
 
 # Disk Sizes
-k8s_master1_size: "50G"
-k8s_node1_size: "50G"
-k8s_node2_size: "50G"
-k8s_node3_size: "50G"
+master_size: "50G"
+node1_size: "50G"
+node2_size: "50G"
+node3_size: "50G"
 
 # IP Addresses
-k8s_master1_ip: "10.10.10.100"
-k8s_node1_ip: "10.10.10.200"
-k8s_node2_ip: "10.10.10.201"
-k8s_node3_ip: "10.10.10.202"
+master_ip: "10.150.10.10"
+node1_ip: "10.150.10.20"
+node2_ip: "10.150.10.21"
+node3_ip: "10.150.10.22"
 
 # Subnet Sizes
-k8s_master1_sn: "/24"
-k8s_node1_sn: "/24"
-k8s_node2_sn: "/24"
-k8s_node3_sn: "/24"
+master_sn: "/24"
+node1_sn: "/24"
+node2_sn: "/24"
+node3_sn: "/24"
 
 # Network Gateway
-k8s_master1_gw: "10.10.10.1"
-k8s_node1_gw: "10.10.10.1"
-k8s_node2_gw: "10.10.10.1"
-k8s_node3_gw: "10.10.10.1"
+master_gw: "10.150.10.1"
+node1_gw: "10.150.10.1"
+node2_gw: "10.150.10.1"
+node3_gw: "10.150.10.1"
 
 # DNS Servers
-k8s_master1_ns: "10.10.10.1"
-k8s_node1_ns: "10.10.10.1"
-k8s_node2_ns: "10.10.10.1"
-k8s_node3_ns: "10.10.10.1"
+master_ns: "10.150.10.1"
+node1_ns: "10.150.10.1"
+node2_ns: "10.150.10.1"
+node3_ns: "10.150.10.1"
 
 # Search Domains
-k8s_master1_sd: "internal"
-k8s_node1_sd: "internal"
-k8s_node2_sd: "internal"
-k8s_node3_sd: "internal"
+master_sd: "internal"
+node1_sd: "internal"
+node2_sd: "internal"
+node3_sd: "internal"
 
 # Network Bridges
-k8s_master1_bridge: "vmbr0"
-k8s_node1_bridge: "vmbr0"
-k8s_node2_bridge: "vmbr0"
-k8s_node3_bridge: "vmbr0"
+master_bridge: "vmbr0"
+node1_bridge: "vmbr0"
+node2_bridge: "vmbr0"
+node3_bridge: "vmbr0"
 
 # Storage volumes
-k8s_master1_stg: "group1"
-k8s_node1_stg: "group1"
-k8s_node2_stg: "group1"
-k8s_node3_stg: "group1"
+master_stg: "proxmox-01"
+node1_stg: "proxmox-01"
+node2_stg: "proxmox-01"
+node3_stg: "proxmox-01"
 
 # CIDR for the Calico Pod Network - MUST be different from your Kubernetes CIDR to avoid an IP conflict. Subnet size will automatically be set to /16.
 calico_cidr: '172.16.0.0'
 
 # URL for the Calico Network Policy: 
 # Can be found here: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#tabs-pod-install-1
-calico_policy_url: 'https://docs.projectcalico.org/v3.11/manifests/calico.yaml'
+calico_policy_url: 'https://docs.projectcalico.org/v3.19/manifests/calico.yaml'
 
 # The URL for the Kubernetes Dashboard Manifest. Not locally hosted as it changes frequently.
 # Can be found in the `Getting Started` section of this page: https://github.com/kubernetes/dashboard/blob/master1/README.md
-k8s_dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml'
+dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml'
 
 # Service user created for the dashboard.
-k8s_user_name: 'tj'
-
-###############################################################################################
-#                                        -VLAN Options-                                       # 
-###############################################################################################
-# These parameters are only required if your network is configured with VLANs and you wish to #
-# specify which VLAN each of your Kubernetes nodes is allocated to. Leave these variables     #
-# blank if you do not intend to use VLANs for your cluster.                                   #
-###############################################################################################
-
-# VLAN Tags
-k8s_master1_vlan: "40"
-k8s_node1_vlan: "40"
-k8s_node2_vlan: "40"
-k8s_node3_vlan: "40"
+user_name: 'devnotnull'
 
 ###############################################################################################
 #                                        -NFS Options-                                        # 
@@ -125,7 +118,7 @@ k8s_node3_vlan: "40"
 ###############################################################################################
 
 # NFS server
-nfs_hostname: 'nfs.k8.devnotnull.com'
+nfs_hostname: 'nas.devnotnull.com'
 
 # NFS Mount Point
 nfs_mount_point: ' /mnt/NFSPool/iocage/s3'

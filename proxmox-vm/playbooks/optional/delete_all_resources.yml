@@ -1,0 +1,36 @@
+---
+- hosts: proxmox
+  gather_facts: False
+  vars:
+    id_list:
+        - "{{ vm_node_id }}"
+  tasks: 
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+            
+      - name: Stopping the VMs.
+        shell: qm stop {{ item }}
+        with_items: "{{ id_list }}"
+        ignore_errors: yes
+
+      - name: Destroying the VMs.
+        shell: qm destroy {{ item }}
+        with_items: "{{ id_list }}"
+        ignore_errors: yes
+
+      - name: Deleting the Resource Pool.
+        shell: pvesh delete /pools/{{ resource_pool }}
+
+      - name: Deleting the Ubuntu img image.
+        file:
+            path: "/tmp/image.img"
+            state: absent
+        ignore_errors: yes
+
+      - name: Deleting the ~/.kube directory.
+        local_action:
+            module: file
+            path: ~/.kube
+            state: absent
+        ignore_errors: yes

@@ -1,0 +1,2 @@
+---
+- import_playbook: playbooks/main/deploy_img_vms.yml

@@ -1,0 +1,74 @@
+---
+- hosts: proxmox
+  gather_facts: False
+  vars:
+    id_list:
+        - "{{ master_id }}"  
+    id_stg_list:
+        - { id: "{{ master_id }}", stg: "{{ master_stg }}" }
+  tasks:
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Creating a resource pool.
+        shell: pvesh create /pools -poolid "{{ resource_pool }}" --Comment "MongoDB Cluster"
+        ignore_errors: yes
+
+      - name: Downloading the Ubuntu image.
+        get_url:
+            url: "{{ img_image }}"
+            dest: "{{ img_download_location }}image.img"
+
+      - name: Creating the VMs.
+        shell: >
+            qm create {{ item.id }}
+            --pool {{ resource_pool }}
+            --ostype "l26"
+            --name {{ item.hn }}
+            --description "MongoDB VM"
+            --cores {{ item.cpu }}
+            --memory {{ item.mem }} 
+            --net0 "virtio,bridge=vmbr0"
+            --nameserver {{ item.ns }}
+            --searchdomain {{ item.sd }}
+            --sshkeys "{{ ssh_key }}"
+            --ipconfig0 "gw={{ item.gw }},ip={{ item.ip }}{{ item.sn }}"
+            --ciuser user
+            --cipassword password
+        with_items: 
+            - { id: "{{ master_id }}", hn: "{{ master_hn }}", cpu: "{{ master_cpu }}", mem: "{{ master_mem }}", gw: "{{ master_gw }}", ip: "{{ master_ip }}", sn: "{{ master_sn }}", ns: "{{ master_ns }}", sd: "{{ master_sd }}" }
+
+      - name: Importing the img image as a disk.
+        shell: qm importdisk {{ item.id }} {{ img_download_location }}image.img {{ item.stg }}
+        with_items: "{{ id_stg_list }}"
+
+      - name: Waiting 10 seconds for the disks to provision.
+        pause:
+            seconds: 10
+
+      - name: Configuring the VM Hardware.
+        shell: qm set {{ item.id }}
+               --scsihw virtio-scsi-pci
+               --scsi0 {{ item.stg }}:vm-{{ item.id }}-disk-0
+               --ide2 {{ item.stg }}:cloudinit
+               --boot c --bootdisk scsi0
+        with_items: "{{ id_stg_list }}"
+
+      - name: Resizing the disk. 
+        shell: qm resize {{ item.id }} scsi0 {{ item.size }}
+        with_items: 
+            - { id: "{{ master_id }}", size: "{{ master_size }}" }
+        ignore_errors: no
+
+      - name: Waiting 30 seconds for the disks to provision.
+        pause:
+            seconds: 30
+
+      - name: Starting the VMs.
+        shell: qm start {{ item }}
+        with_items: "{{ id_list }}"
+
+      - name: Waiting 45 seconds for for Debian to finish booting.
+        pause:
+            seconds: 45

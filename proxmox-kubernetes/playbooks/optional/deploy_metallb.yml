@@ -1,5 +1,5 @@
 ---
-- hosts: k8s_master1
+- hosts: master1
   gather_facts: False
   tasks:
       - name: Including the variables.

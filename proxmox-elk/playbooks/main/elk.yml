@@ -1,0 +1,19 @@
+---
+- hosts: elk_hosts
+  become: true
+  gather_facts: true
+  roles:
+    - role: geerlingguy.java
+    - role: geerlingguy.elasticsearch
+    - role: geerlingguy.kibana
+    # - role: rossmcdonald.influxdb
+    - role: cloudalchemy.grafana
+      vars:
+        grafana_port: 3009
+        grafana_security:
+          admin_user: admin
+          admin_password: password
+  tasks:
+    - name: Including the variables.
+      include_vars:
+          file: ../../vars.yml
