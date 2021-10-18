@@ -43,6 +43,11 @@
         apt:
             name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'kubelet=1.21.0-00', 'kubeadm=1.21.0-00', 'kubectl=1.21.0-00']
 
+      - name: Installing nfs.
+        become: yes
+        apt:
+            name: ['nfs-client']
+
       - name: Installing the necessary Python library dependencies to use the `k8s` Ansible module.
         become: yes
         pip:

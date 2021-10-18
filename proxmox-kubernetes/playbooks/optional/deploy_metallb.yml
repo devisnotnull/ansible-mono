@@ -6,10 +6,18 @@
         include_vars:
            file: ../../vars.yml
             
-      - name: Deploying MetalLB.
+      - name: Deploying MetalLB namespace.
         become: yes
-        shell: kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml
+        shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/namespace.yaml
   
+      - name: Deploying MetalLB .
+        become: yes
+        shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/metallb.yaml
+
+      - name: Deploying MetalLB .
+        become: yes
+        shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+
       - name: Configuring MetalLB.
         become: yes
         k8s:

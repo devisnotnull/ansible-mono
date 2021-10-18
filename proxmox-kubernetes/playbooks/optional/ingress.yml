@@ -1,0 +1,22 @@
+---
+- hosts: master1
+  gather_facts: true
+  roles:
+    - role: geerlingguy.helm
+      vars:
+        helm_version: 'v3.2.1'
+        helm_platform: linux
+
+  tasks:     
+
+    - name: Setup repo
+      shell: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      ignore_errors: yes
+
+    - name: Setup NGINX ingress
+      shell: helm install my-ingress-nginx ingress-nginx/ingress-nginx
+      ignore_errors: yes
+
+    - name: Update
+      shell: helm repo update
+      ignore_errors: yes
