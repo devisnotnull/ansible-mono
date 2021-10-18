@@ -7,11 +7,15 @@
         - "{{ node1_id }}"
         - "{{ node2_id }}"
         - "{{ node3_id }}"
+        - "{{ node4_id }}"
+        - "{{ node5_id }}"
     id_stg_list:
-        - { id: "{{ master_id }}", stg: "{{ master_stg }}" }
-        - { id: "{{ node1_id }}", stg: "{{ node1_stg }}" }
-        - { id: "{{ node2_id }}", stg: "{{ node2_stg }}" }
-        - { id: "{{ node3_id }}", stg: "{{ node3_stg }}" }
+        - { id: "{{ master_id }}", stg: "{{ storage }}" }
+        - { id: "{{ node1_id }}", stg: "{{ storage }}" }
+        - { id: "{{ node2_id }}", stg: "{{ storage }}" }
+        - { id: "{{ node3_id }}", stg: "{{ storage }}" }
+        - { id: "{{ node4_id }}", stg: "{{ storage }}" }
+        - { id: "{{ node5_id }}", stg: "{{ storage }}" }
   tasks:
       - name: Including the variables.
         include_vars:
@@ -42,10 +46,12 @@
             --searchdomain {{ item.sd }}
             --sshkeys {{ ssh_key }}
         with_items:
-            - { id: "{{ master_id }}", hn: "{{ master_hn }}", cpu: "{{ master_cpu }}", mem: "{{ master_mem }}", bridge: "{{ master_bridge }}", gw: "{{ master_gw }}", ip: "{{ master_ip }}", sn: "{{ master_sn }}", ns: "{{ master_ns }}", sd: "{{ master_sd }}" }
-            - { id: "{{ node1_id }}", hn: "{{ node1_hn }}", cpu: "{{ node1_cpu }}", mem: "{{ node1_mem }}", bridge: "{{ node1_bridge }}", gw: "{{ node1_gw }}", ip: "{{ node1_ip }}", sn: "{{ node1_sn }}", ns: "{{ node1_ns }}", sd: "{{ node1_sd }}" }
-            - { id: "{{ node2_id }}", hn: "{{ node2_hn }}", cpu: "{{ node2_cpu }}", mem: "{{ node2_mem }}", bridge: "{{ node2_bridge }}", gw: "{{ node2_gw }}", ip: "{{ node2_ip }}", sn: "{{ node2_sn }}", ns: "{{ node2_ns }}", sd: "{{ node2_sd }}" }
-            - { id: "{{ node3_id }}", hn: "{{ node3_hn }}", cpu: "{{ node3_cpu }}", mem: "{{ node3_mem }}", bridge: "{{ node3_bridge }}", gw: "{{ node3_gw }}", ip: "{{ node3_ip }}", sn: "{{ node3_sn }}", ns: "{{ node3_ns }}", sd: "{{ node3_sd }}" }
+            - { id: "{{ master_id }}", hn: "{{ master_hn }}", cpu: "{{ master_cpu }}", mem: "{{ master_mem }}", bridge: "{{ bridge }}", gw: "{{ gateway }}", ip: "{{ master_ip }}", sn: "{{ subnet }}", ns: "{{ dns }}", sd: "{{ domain }}" }
+            - { id: "{{ node1_id }}", hn: "{{ node1_hn }}", cpu: "{{ minion_cpu }}", mem: "{{ minion_mem }}", bridge: "{{ bridge }}", gw: "{{ gateway }}", ip: "{{ node1_ip }}", sn: "{{ subnet }}", ns: "{{ dns }}", sd: "{{ domain }}" }
+            - { id: "{{ node2_id }}", hn: "{{ node2_hn }}", cpu: "{{ minion_cpu }}", mem: "{{ minion_mem }}", bridge: "{{ bridge }}", gw: "{{ gateway }}", ip: "{{ node2_ip }}", sn: "{{ subnet }}", ns: "{{ dns }}", sd: "{{ domain }}" }
+            - { id: "{{ node3_id }}", hn: "{{ node3_hn }}", cpu: "{{ minion_cpu }}", mem: "{{ minion_mem }}", bridge: "{{ bridge }}", gw: "{{ gateway }}", ip: "{{ node3_ip }}", sn: "{{ subnet }}", ns: "{{ dns }}", sd: "{{ domain }}" }
+            - { id: "{{ node4_id }}", hn: "{{ node4_hn }}", cpu: "{{ minion_cpu }}", mem: "{{ minion_mem }}", bridge: "{{ bridge }}", gw: "{{ gateway }}", ip: "{{ node4_ip }}", sn: "{{ subnet }}", ns: "{{ dns }}", sd: "{{ domain }}" }
+            - { id: "{{ node5_id }}", hn: "{{ node5_hn }}", cpu: "{{ minion_cpu }}", mem: "{{ minion_mem }}", bridge: "{{ bridge }}", gw: "{{ gateway }}", ip: "{{ node5_ip }}", sn: "{{ subnet }}", ns: "{{ dns }}", sd: "{{ domain }}" }
 
       - name: Importing the qcow2 image as a disk.
         shell: qm importdisk {{ item.id }} {{ image_download_location }}image.qcow2 {{ item.stg }}
@@ -58,15 +64,18 @@
                --scsi0 {{ item.stg }}:vm-{{ item.id }}-disk-0
                --ide2 {{ item.stg }}:cloudinit
                --boot c --bootdisk scsi0
+               --serial0 socket
         with_items: "{{ id_stg_list }}"
 
       - name: Resizing the disk.
         shell: qm resize {{ item.id }} scsi0 {{ item.size }}
         with_items:
-            - { id: "{{ master_id }}", size: "{{ master_size }}" }
-            - { id: "{{ node1_id }}", size: "{{ node1_size }}" }
-            - { id: "{{ node2_id }}", size: "{{ node2_size }}" }
-            - { id: "{{ node3_id }}", size: "{{ node3_size }}" }
+            - { id: "{{ master_id }}", size: "{{ master_disk }}" }
+            - { id: "{{ node1_id }}", size: "{{ minion_disk }}" }
+            - { id: "{{ node2_id }}", size: "{{ minion_disk }}" }
+            - { id: "{{ node3_id }}", size: "{{ minion_disk }}" }
+            - { id: "{{ node4_id }}", size: "{{ minion_disk }}" }
+            - { id: "{{ node5_id }}", size: "{{ minion_disk }}" }
 
       - name: Starting the VMs.
         shell: qm start {{ item }}

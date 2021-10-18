@@ -7,7 +7,6 @@
       apt:
           name: nfs-common
 
-
 - hosts: master1
   gather_facts: False
   tasks:

@@ -29,72 +29,54 @@ master_id: '4010'
 node1_id: '40100'
 node2_id: '40101'
 node3_id: '40102'
+node4_id: '40103'
+node5_id: '40104'
 
 # Hostnames
 master_hn: "master1.k8"
 node1_hn: "minion1.k8"
 node2_hn: "minion2.k8"
 node3_hn: "minion3.k8"
+node4_hn: "minion4.k8"
+node5_hn: "minion5.k8"
 
 # Number of CPUs
 master_cpu: "2"
-node1_cpu: "4"
-node2_cpu: "4"
-node3_cpu: "4"
+minion_cpu: "4"
 
 # Amount of memory expressed in megabytes
-master_mem: "8192"
-node1_mem: "8192"
-node2_mem: "8192"
-node3_mem: "8192"
+master_mem: "4096"
+minion_mem: "12288"
 
 # Disk Sizes
-master_size: "50G"
-node1_size: "50G"
-node2_size: "50G"
-node3_size: "50G"
+master_disk: "50G"
+minion_disk: "100G"
 
 # IP Addresses
 master_ip: "10.150.10.10"
 node1_ip: "10.150.10.20"
 node2_ip: "10.150.10.21"
 node3_ip: "10.150.10.22"
+node4_ip: "10.150.10.23"
+node5_ip: "10.150.10.24"
 
 # Subnet Sizes
-master_sn: "/24"
-node1_sn: "/24"
-node2_sn: "/24"
-node3_sn: "/24"
+subnet: "/24"
 
-# Network Gateway
-master_gw: "10.150.10.1"
-node1_gw: "10.150.10.1"
-node2_gw: "10.150.10.1"
-node3_gw: "10.150.10.1"
+#
+gateway: "10.150.10.1"
 
 # DNS Servers
-master_ns: "10.150.10.1"
-node1_ns: "10.150.10.1"
-node2_ns: "10.150.10.1"
-node3_ns: "10.150.10.1"
+dns: "10.150.10.1"
 
 # Search Domains
-master_sd: "internal"
-node1_sd: "internal"
-node2_sd: "internal"
-node3_sd: "internal"
+domain: "devnotnull.com"
 
 # Network Bridges
-master_bridge: "vmbr0"
-node1_bridge: "vmbr0"
-node2_bridge: "vmbr0"
-node3_bridge: "vmbr0"
+bridge: "vmbr0"
 
 # Storage volumes
-master_stg: "proxmox-01"
-node1_stg: "proxmox-01"
-node2_stg: "proxmox-01"
-node3_stg: "proxmox-01"
+storage: "proxmox-01"
 
 # CIDR for the Calico Pod Network - MUST be different from your Kubernetes CIDR to avoid an IP conflict. Subnet size will automatically be set to /16.
 calico_cidr: '172.16.0.0'
@@ -121,7 +103,7 @@ user_name: 'devnotnull'
 nfs_hostname: 'nas.devnotnull.com'
 
 # NFS Mount Point
-nfs_mount_point: ' /mnt/NFSPool/iocage/s3'
+nfs_mount_point: ' /mnt/Primary/proxmox_backup'
 
 # NFS Provisioner Name
 nfs_provisioner: 'saturnpool'
@@ -165,6 +147,8 @@ nfs_reclaim_policy: 'Retain'
 # metallb_ap1_cidr: CIDR                                                                      #
 # metallb_ap2_cidr: CIDR                                                                      #
 ###############################################################################################
+
+metallb_cidr: '10.150.10.128/25'
 
 # The IP Address of the router you wish to peer with.
 metallb_peer_router: '10.10.10.1'
