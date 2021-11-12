@@ -1,0 +1,29 @@
+---
+- hosts: nginx-proxy
+  become: true
+
+  pre_tasks:
+    - name: Config
+      include_vars: vars.yml
+
+    - name: apt cache update & Upgrade
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: full
+
+  tasks:
+    - name: Install base packages
+      import_tasks: playbooks/main/install_base_packages.yml
+      
+    - name: Deploy VM
+      import_tasks: playbooks/main/deploy_img_vms.yml
+      
+    - name: Install base packages
+      import_tasks: playbooks/main/install_base_packages.yml
+
+    - name: Install Nginx Proxy Manager
+      import_tasks: playbooks/main/proxy.yml
+    
+    - name: install portainer
+      import_tasks: playbooks/main/portainer.yml

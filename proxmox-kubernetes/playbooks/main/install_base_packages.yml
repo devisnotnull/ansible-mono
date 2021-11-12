@@ -87,3 +87,12 @@
 
       - name: Waiting for Debian to finish performing automatic updates before continuing.
         script: ../../files/bash_scripts/docker.sh
+
+      - name: Restart docker
+        become: yes
+        systemd: 
+          state: restarted
+          name: "{{ item }}"
+          enabled: yes
+        with_items:
+          - "docker"

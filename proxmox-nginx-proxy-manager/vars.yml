@@ -1,0 +1,68 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+img_image: 'https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+img_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+resource_pool: "Images"
+
+# VM IDs
+vm_node_id: '60100'
+
+# Hostnames
+vm_node_hn: "proxy.internal"
+
+# Number of CPUs
+vm_node_cpu: "1"
+
+# Amount of memory expressed in megabytes
+vm_node_mem: "4096"
+
+# Disk Sizes
+vm_node_size: "50G"
+
+# IP Addresses
+vm_node_ip: "10.10.10.95"
+
+# Subnet Sizes
+vm_node_sn: "/24"
+
+# Network Gateway
+vm_node_gw: "10.10.10.1"
+
+# DNS Servers
+vm_node_ns: "10.10.10.1"
+
+# Search Domains
+vm_node_sd: "internal"
+
+# Network Bridges
+vm_node_bridge: "vmbr0"
+
+# Storage volumes
+vm_node_stg: "group1"
+
+---
+config_dir: '~'
+
+# Docker group
+docker_group: docker
+ansible_user: ansible 
+
+# proxy vars
+network: proxy
+mysql_root_password: npm
+mysql_database: npm
+mysql_user: npm
+mysql_password: npm
+mysql_host: mysql
+
+# portainer
+portainer_enable: false
