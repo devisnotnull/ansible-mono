@@ -1,0 +1,78 @@
+---
+- hosts: proxmox
+  gather_facts: False
+  vars:
+    id_list:
+        - "{{ vm_node_id }}"
+    id_stg_list:
+        - { id: "{{ vm_node_id }}", stg: "{{ vm_node_stg }}" }
+
+  tasks:
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Creating a resource pool.
+        shell: pvesh create /pools -poolid "{{ resource_pool }}" --Comment "Kubernetes Cluster"
+        ignore_errors: yes
+
+      - name: Downloading the Ubuntu qcow2 image.
+        get_url:
+            url: "{{ img_image }}"
+            dest: "{{ img_download_location }}image.qcow2"
+
+      - name: Creating the VMs.
+        shell: >
+            qm create {{ item.id }}
+            --pool {{ resource_pool }}
+            --ostype "l26"
+            --name {{ item.hn }}
+            --description "Kubernetes VM"
+            --agent 1
+            --cores {{ item.cpu }}
+            --memory {{ item.mem }} 
+            --net0 "virtio,bridge=vmbr0"
+            --ipconfig0 "gw={{ item.gw }},ip={{ item.ip }}{{ item.sn }}"
+            --nameserver {{ item.ns }}
+            --sshkeys /root/jump_key.pub
+        with_items: 
+            - { id: "{{ vm_node_id }}", hn: "{{ vm_node_hn }}", cpu: "{{ vm_node_cpu }}", mem: "{{ vm_node_mem }}", gw: "{{ vm_node_gw }}", ip: "{{ vm_node_ip }}", sn: "{{ vm_node_sn }}", ns: "{{ vm_node_ns }}", sd: "{{ vm_node_sd }}" }
+          
+      - name: Importing the img image as a disk.
+        shell: qm importdisk {{ item.id }} {{ img_download_location }}image.qcow2 {{ item.stg }}
+        with_items: "{{ id_stg_list }}"
+
+      - name: Configuring the VM Hardware.
+        shell: qm set {{ item.id }}
+                --scsihw virtio-scsi-pci
+                --scsi0 {{ item.stg }}:vm-{{ item.id }}-disk-0
+                --ide2 {{ item.stg }}:cloudinit
+                --boot c --bootdisk scsi0
+                --serial0 socket 
+        with_items: "{{ id_stg_list }}"
+
+      - name: Resizing the disk. 
+        shell: qm resize {{ item.id }} scsi0 {{ item.size }}
+        with_items: 
+            - { id: "{{ vm_node_id }}", size: "{{ vm_node_size }}" }
+        ignore_errors: yes
+
+      - name: Waiting 60 seconds for the disks to provision.
+        pause:
+            seconds: 60
+
+      - name: Starting the VMs.
+        shell: qm start {{ item }}
+        with_items: "{{ id_list }}"
+        
+      - name: Stopping the VMs.
+        shell: qm stop {{ item }}
+        with_items: "{{ id_list }}"
+
+      - name: Starting the VMs.
+        shell: qm start {{ item }}
+        with_items: "{{ id_list }}"
+
+      - name: Waiting 180 seconds for for buntu to finish booting.
+        pause:
+            seconds: 180

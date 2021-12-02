@@ -65,6 +65,7 @@
                --ide2 {{ item.stg }}:cloudinit
                --boot c --bootdisk scsi0
                --serial0 socket
+               --onboot 1
         with_items: "{{ id_stg_list }}"
 
       - name: Resizing the disk.

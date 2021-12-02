@@ -6,10 +6,16 @@
         include_vars:
             file: ../../vars.yml
 
+      - name: Copy kubeadm config 
+        ansible.builtin.template:
+          src: ../../files/templates/kubeadm.yml.j2
+          dest: ~/kubeadm.yml
+          mode: '0644'
+
       - name: Initializing Kubernetes on the master.
         become: yes
         shell: |
-            kubeadm init --pod-network-cidr=172.16.0.0/16
+            kubeadm init --config ./kubeadm.yml
 
       - name: Configure kubeconfig
         become: yes

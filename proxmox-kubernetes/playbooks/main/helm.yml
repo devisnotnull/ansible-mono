@@ -1,0 +1,28 @@
+---
+- hosts: master1:nodes
+  gather_facts: False
+  tasks:            
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Setup
+        become: yes
+        shell: curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+
+      - name: apt
+        become: yes
+        shell: apt-get install apt-transport-https --yes
+
+      - name: deb
+        become: yes
+        shell: echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+      - name: Setup
+        become: yes
+        shell: apt-get update
+
+      - name: Setup
+        become: yes
+        shell: apt-get install helm
+
