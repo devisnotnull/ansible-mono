@@ -44,3 +44,5 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm install my-kube-prometheus-stack prometheus-community/kube-prometheus-stack --version 19.0.1
 
 kubectl apply -f https://10.150.10.230/v3/import/xlbdr54gsxf4vwxpqxbvwjcfmlt9x2qhlbwmm4c6hdl6vqm82kjgbw_c-m-4prcvtbd.yaml
+
+helm install redis bitnami/redis --version 15.5.5 --set master.service.type=LoadBalancer
