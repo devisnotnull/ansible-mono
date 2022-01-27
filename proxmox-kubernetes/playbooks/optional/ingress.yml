@@ -1,5 +1,5 @@
 ---
-- hosts: master1
+- hosts: "{{master}}"
   gather_facts: true
   roles:
     - role: geerlingguy.helm

@@ -1,5 +1,5 @@
 ---
-- hosts: master1
+- hosts: "{{master}}"
   gather_facts: False
   tasks:
       - name: Including the variables.
@@ -51,7 +51,7 @@
         when: join_command is undefined
         register: join_command
 
-- hosts: nodes
+- hosts: "{{slaves}}"
   gather_facts: False
   tasks:
       - name: Including the variables.

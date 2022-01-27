@@ -1,5 +1,5 @@
 ---
-- hosts: proxmox
+- hosts: "{{proxmox}}"
   gather_facts: False
   vars:
     id_list:

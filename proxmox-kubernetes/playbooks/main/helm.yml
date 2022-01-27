@@ -1,5 +1,5 @@
 ---
-- hosts: master1:nodes
+- hosts: "{{master}}:nodes"
   gather_facts: False
   tasks:            
       - name: Including the variables.
