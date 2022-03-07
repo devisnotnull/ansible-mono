@@ -1,5 +1,5 @@
 ---
-- hosts: "{{master}}:nodes"
+- hosts: "{{masters}}:{{minions}}"
   gather_facts: False
   tasks:
     - name: Installing nfs-common.
@@ -7,7 +7,7 @@
       apt:
           name: nfs-common
 
-- hosts: proxmox
+- hosts: "{{masters[0]}}"
   gather_facts: False
   tasks:
       - name: Including the variables.
@@ -20,8 +20,7 @@
       - name: install helm nfs-provisioner
         shell: |
           helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-          --set nfs.server=nas.devnotnull.com \
-          --set nfs.path=/mnt/Tank/proxmox-backup  \
+          --set nfs.server={{nfs_hostname}} \
+          --set nfs.path={{nfs_mount_point}}  \
           --set storageClass.defaultClass=true \
-          --set storageClass.name=nfs
-
+          --set storageClass.name={{nfs_provisioner}}
