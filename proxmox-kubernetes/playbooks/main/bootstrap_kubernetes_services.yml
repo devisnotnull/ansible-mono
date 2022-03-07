@@ -1,5 +1,5 @@
 ---
-- hosts: master1
+- hosts: "{{masters}}"
   gather_facts: False
   tasks:
       - name: Deploying the Dashboard to Kubernetes.

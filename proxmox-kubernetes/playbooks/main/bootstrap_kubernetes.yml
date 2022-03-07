@@ -1,5 +1,5 @@
 ---
-- hosts: master1
+- hosts: "{{masters}}"
   gather_facts: False
   tasks:
       - name: Including the variables.
@@ -51,13 +51,20 @@
         when: join_command is undefined
         register: join_command
 
-- hosts: nodes
+      - debug:
+          var: join_command
+
+- hosts: "{{minions}}"
   gather_facts: False
   tasks:
       - name: Including the variables.
         include_vars:
             file: ../../vars.yml
 
+      - name: Display all variables/facts known for a host
+        debug:
+          var: hostvars[masters[0]]
+
       - name: Joining the nodes to the master.
         become: yes
-        shell: "{{ hostvars[groups['master1'][0]]['join_command']['stdout'] }} --ignore-preflight-errors=all"
+        shell: "{{ hostvars[groups[masters][0]]['join_command']['stdout'] }} --ignore-preflight-errors=all"

@@ -1,7 +1,10 @@
 ---
-- import_playbook: playbooks/main/deploy_img_vms.yml
+- import_playbook: playbooks/main/deploy_master_vms.yml
+- import_playbook: playbooks/main/deploy_minion_vms.yml
 - import_playbook: playbooks/main/install_base_packages.yml
 - import_playbook: playbooks/main/bootstrap_kubernetes.yml
-- import_playbook: playbooks/optional/deploy_metallb.yml
-- import_playbook: playbooks/optional/deploy_dashboard.yml
+- import_playbook: playbooks/main/helm.yml
+- import_playbook: playbooks/helm/deploy_metallb.yml
+- import_playbook: playbooks/helm/deploy_nfs_provisioner.yml
+- import_playbook: playbooks/helm/deploy_ingress_controller.yml
 

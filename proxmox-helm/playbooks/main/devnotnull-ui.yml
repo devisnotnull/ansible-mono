@@ -1,0 +1,60 @@
+---
+- hosts: "{{masters}}"
+  gather_facts: false
+  connection: local
+
+  tasks:     
+    - name: Setup repo
+      shell: helm repo add bitnami https://charts.bitnami.com/bitnami
+      ignore_errors: yes
+
+    - name: Setup redis
+      shell: helm repo add bitnami https://charts.bitnami.com/bitnami
+      ignore_errors: yes
+
+    - name: Update
+      shell: helm repo update
+      ignore_errors: yes
+
+    - name: Ensure the myapp Namespace exists.
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: default
+        state: present
+
+#    - name: Install helm chart
+#      kubernetes.core.helm:
+#        name: redis
+#        chart_ref: bitnami/redis
+#        chart_version: 16.4.4
+#        state: present
+#        name: redis
+#        namespace: default
+
+    - name: Install redis
+      shell: >
+        helm install redis bitnami/redis --version 16.4.3 \
+        --set master.service.type=LoadBalancer \
+        --set master.service.loadBalancerIP={{ devnotnull_redis }} \
+        --set auth.enabled=false \
+        --set master.persistence.enabled=false \
+        --set replica.persistence.enabled=false \
+        --set image.pullPolicy=Always
+      ignore_errors: yes
+
+    - name: Install devnotnul ui
+      shell: >
+        helm install devnotnull-ui bitnami/node \
+        --set image.repository=alexbrown201/fandanzle-v2-api:latest --set port=3000 \
+        --set service.loadBalancerIP={{ devnotnull_ui }}  \
+        --set image.pullPolicy=Always
+      ignore_errors: yes
+
+    - name: Install devnotnul api
+      shell: >
+        helm install devnotnull-api bitnami/node \
+        --set image.repository=alexbrown201/fandanzle-v2-api:latest --set port=3005 \
+        --set service.loadBalancerIP={{ devnotnull_api }}  \
+        --set image.pullPolicy=Always
+      ignore_errors: yes

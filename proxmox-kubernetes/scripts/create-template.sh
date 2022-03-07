@@ -6,5 +6,3 @@ qm set 50000 --cipassword password --scsihw virtio-scsi-pci --scsi0 proxmox-01:v
 qm resize 50000 scsi0 100G
 
 docker logs  6f07382f715c  2>&1 | grep "Password:"
-
-dkhsj4hzrcl5rx8txqmxkf6l6gxlkjh4lr68q67cbswmkw92hvpltd

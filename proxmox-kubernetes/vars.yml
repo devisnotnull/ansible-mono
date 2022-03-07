@@ -13,6 +13,7 @@ image_download_location: '/tmp/'
 # Resource Pool for your virtual machines.
 resource_pool: "Kubernetes"
 
+
 ssh_key: '/etc/pve/priv/authorized_keys'
 
 # The version of Docker to use on the hosts.
@@ -23,22 +24,6 @@ docker_version: '5:19.03.11~3-0~debian-buster'
 # The version of Kubernetes to install.
 # The newest release can be found here: https://kubernetes.io/docs/setup/release/notes/
 kubernetes_version: "v1.22.0"
-
-# VM IDs
-master_id: '4010'
-node1_id: '40100'
-node2_id: '40101'
-node3_id: '40102'
-node4_id: '40103'
-node5_id: '40104'
-
-# Hostnames
-master_hn: "master1.k8"
-node1_hn: "minion1.k8"
-node2_hn: "minion2.k8"
-node3_hn: "minion3.k8"
-node4_hn: "minion4.k8"
-node5_hn: "minion5.k8"
 
 # Number of CPUs
 master_cpu: "2"
@@ -51,23 +36,6 @@ minion_mem: "12288"
 # Disk Sizes
 master_disk: "50G"
 minion_disk: "100G"
-
-# IP Addresses
-master_ip: "10.150.10.10"
-node1_ip: "10.150.10.20"
-node2_ip: "10.150.10.21"
-node3_ip: "10.150.10.22"
-node4_ip: "10.150.10.23"
-node5_ip: "10.150.10.24"
-
-# Subnet Sizes
-subnet: "/24"
-
-#
-gateway: "10.150.10.1"
-
-# DNS Servers
-dns: "10.150.10.1"
 
 # Search Domains
 domain: "devnotnull.com"
@@ -103,17 +71,16 @@ user_name: 'devnotnull'
 nfs_hostname: 'nas.devnotnull.com'
 
 # NFS Mount Point
-nfs_mount_point: ' /mnt/Primary/proxmox_backup'
+nfs_mount_point: '/mnt/Tank/proxmox-backup'
 
 # NFS Provisioner Name
-nfs_provisioner: 'saturnpool'
+nfs_provisioner: 'nfs'
 
 # Namespace to deploy the NFS Provisioner to.
 nfs_namespace: 'nfs-provisioner'
 
 # Default reclaim policy. https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy
 nfs_reclaim_policy: 'Retain'
-
 
 ###############################################################################################
 #                                      -MetalLB Options-                                      # 
@@ -130,50 +97,9 @@ nfs_reclaim_policy: 'Retain'
 # multiple address pools depending on your personal network configuration. The configuration  #
 # is dynamically generated based on how many sets of variables you list below. For example:   #
 #                                                                                             #
-# If you wish to deploy a single address pool, you would declare these three variables.       #
-#                                                                                             #
-# metallb_ap1_name: NAME                                                                      #
-# metallb_ap1_protocol: PROTOCOL                                                              #
-# metallb_ap1_cidr: CIDR                                                                      #
-#                                                                                             #
-#                                                                                             #
-# However, if you wished to declare two address pools, you would include a second set of      #
-# variables where the `ap1` portion of the variable name is incremeneted by one.              #
-#                                                                                             #
-# metallb_ap1_name: NAME                                                                      #
-# metallb_ap2_name: NAME                                                                      #
-# metallb_ap1_protocol: PROTOCOL                                                              #
-# metallb_ap2_protocol: PROTOCOL                                                              #
-# metallb_ap1_cidr: CIDR                                                                      #
-# metallb_ap2_cidr: CIDR                                                                      #
 ###############################################################################################
 
 metallb_cidr: '10.150.10.128/25'
-
-# The IP Address of the router you wish to peer with.
-metallb_peer_router: '10.10.10.1'
-
-# The AS Number of the router you wish to peer with.
-metallb_peer_asn: '64512'
-
-# The names of your address pools.
-metallb_ap1_name: 'VLAN20'
-metallb_ap4_name: 'VLAN70'
-metallb_ap2_name: 'VLAN50'
-metallb_ap3_name: 'VLAN60'
-
-# The protocols of your address pools. (bgp|layer2)
-metallb_ap1_protocol: 'bgp'
-metallb_ap2_protocol: 'bgp'
-metallb_ap3_protocol: 'bgp'
-metallb_ap4_protocol: 'bgp'
-
-# The CIDRs of your address pools.
-metallb_ap1_cidr: '192.168.20.1/24'
-metallb_ap2_cidr: '192.168.50.1/24'
-metallb_ap3_cidr: '192.168.60.1/24'
-metallb_ap4_cidr: '192.168.70.1/24'
-
 
 ###############################################################################################
 #                              -NGINX Ingress Controller Options-                             # 
