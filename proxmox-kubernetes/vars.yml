@@ -13,7 +13,6 @@ image_download_location: '/tmp/'
 # Resource Pool for your virtual machines.
 resource_pool: "Kubernetes"
 
-
 ssh_key: '/etc/pve/priv/authorized_keys'
 
 # The version of Docker to use on the hosts.
@@ -110,3 +109,7 @@ metallb_cidr: '10.150.10.128/25'
 
 # The IP Address to use 
 nginx_load_balancer_ip: '10.10.10.100'
+
+###############################################################################################
+# 
+###############################################################################################

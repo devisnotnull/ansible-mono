@@ -56,3 +56,23 @@ helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
 ##
 ## 
 helm install my-argo banzaicloud-stable/argo --version 0.2.2
+
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install --wait --create-namespace --namespace cert-manager cert-manager jetstack/cert-manager --version v1.3.0 --set installCRDs=true
+helm install -f custom-values.yaml --wait --namespace actions-runner-system --create-namespace actions-runner-controller actions-runner-controller/actions-runner-controller
+
+
+helm install --wait --namespace actions-runner-system \
+--create-namespace actions-runner-controller \
+actions-runner-controller/actions-runner-controller \
+--set authSecret.github_token= \
+--set authSecret.create=true
+
+kubectl create namespace self-hosted-runners
+
+kubectl --namespace self-hosted-runners apply -f self-hosted-runner.yaml
+
+//
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install my-kube-prometheus-stack prometheus-community/kube-prometheus-stack --version 34.9.0
