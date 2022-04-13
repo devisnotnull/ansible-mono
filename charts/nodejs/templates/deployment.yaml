@@ -37,10 +37,20 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          env:          
+          env:
+
             {{- range $key, $val := .Values.env }}
               - name: {{ $key }}
                 value: {{ $val | quote }}
+            {{- end }}
+
+            {{- range $key, $val := .Values.secret.env }}
+              - name: {{ $key }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.secret.name }}
+                    key: {{ $val | quote }}
+                    optional: false 
             {{- end }}
 
       {{- with .Values.nodeSelector }}
