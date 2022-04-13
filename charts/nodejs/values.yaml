@@ -14,6 +14,15 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+secret:
+  enabled: false
+  name: "sample-secret"
+  env: 
+    SAMPLE_SECRET_VALUE: SAMPLE_SECRET_VALUE
+
+env:
+  SAMPLE_VALUE: SAMPLE_VALUE
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

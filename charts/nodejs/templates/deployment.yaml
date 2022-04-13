@@ -1,3 +1,5 @@
+{{- $secretName := .Values.secret.name -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,13 +46,15 @@ spec:
                 value: {{ $val | quote }}
             {{- end }}
 
+            {{- if eq .Values.secret.enabled true }}
             {{- range $key, $val := .Values.secret.env }}
               - name: {{ $key }}
                 valueFrom:
                   secretKeyRef:
-                    name: {{ .Values.secret.name }}
+                    name: "{{ $secretName }}"
                     key: {{ $val | quote }}
                     optional: false 
+            {{- end }}
             {{- end }}
 
       {{- with .Values.nodeSelector }}
