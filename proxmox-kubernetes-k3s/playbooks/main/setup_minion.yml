@@ -1,0 +1,12 @@
+---
+- hosts: "{{minions}}"
+  gather_facts: false
+  tasks:
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+                         
+      - name: Setup minions
+        become: yes
+        shell: |
+          curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" K3S_TOKEN="{{ k3s_token }}" sh -s - --server https://10.150.10.50:6443

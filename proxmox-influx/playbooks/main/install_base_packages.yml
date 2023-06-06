@@ -1,0 +1,10 @@
+---
+- hosts: portainer
+  gather_facts: False
+  tasks:            
+    - name: Performing a Package Upgrade.
+      become: yes
+      apt:
+          name: '*'
+          state: latest
+

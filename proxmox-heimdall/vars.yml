@@ -21,7 +21,7 @@ resource_pool: "Heimdall"
 id: '7800'
 
 ## Descriptive Name
-name: 'Elk'
+name: 'Heimdall'
 
 # Hostnames
 hn: "heimdall.devnotnull.com"
@@ -54,4 +54,4 @@ sd: "devnotnull.com"
 bridge: "vmbr0"
 
 # Storage volumes
-stg: "proxmox-01"
+stg: "Pool1"

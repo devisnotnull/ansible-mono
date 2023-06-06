@@ -1,0 +1,36 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+image_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+resource_pool: "powerdns"
+
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# Amount of memory expressed in megabytes
+powerdns_mem: "4096"
+
+powerdns_cpu: "2"
+
+# Disk Sizes
+powerdns_disk: "20G"
+
+# Search Domains
+domain: "devnotnull.com"
+
+# Network Bridges
+bridge: "vmbr0"
+
+# Storage volumes
+storage: "Pool1"
+
+# Service user created for the dashboard.
+user_name: 'devnotnull'

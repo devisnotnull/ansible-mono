@@ -1,55 +1,117 @@
-# TKS (TJ's Kubernetes Service)
+# Install
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/zimmertr/Bootstrap-Kubernetes-with-QEMU/master1/screenshot.png" width="800">
-</p>
+## Production
 
-## Summary
-Declaratively build a 4 node Kubernetes cluster on Proxmox using Ansible and QEMU. Optionally enable advanced features including ingress, load balancing, etc.
+Deploy Kubenetes cluster 
 
-**Approximate deployment time:** 25 minutes
-
-## Requirements
-1. Proxmox server
-2. DNS Server
-3. Ansible 2.7.0+. Known incompatibility with a previous build.
-
-## Instructions
-**Required:**
-
-1. Modify the `vars.yml` file with values specific to your environment.
-2. Provision DNS A records for the IP Addresses & Hostnames you defined for your nodes in the `vars.yml` file.
-3. Modify the `inventory.ini` file to reflect your chosen DNS records and the location of the SSH keys used to connect to the nodes.
-4. Run the deployment: `ansible-playbook -i inventory.ini site.yml`
-5. After deployment, a `~/.kube` directory will be created on your workstation. Within your `config` an `authentication_token` file can be be found. This token is used to authenticate against the Kubernetes API and Dashboard using your account. To connect to the dashboard, install `kubectl` on your workstation and run `kubectl proxy` then navigate to the [Dashboard Endpoint](http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/) in your browser.
-
-**Optional:**
-
-*To enable an optional feature, fill in the additional parameters in `vars.yml` and execute a playbook listed below.*
-
-| Feature | Command | Requirements |
-| ------- | ------- | ------------ |
-| [NFS backed persistent storage](https://github.com/kubernetes-incubator/external-storage/tree/master1/nfs-client) | `ansible-playbook -i inventory.ini playbooks/optional/deploy_nfs_provisioner.yml` | |
-| [MetalLB Load Balancer](https://metallb.universe.tf) | `ansible-playbook -i inventory.ini playbooks/optional/deploy_metallb.yml` | | 
-| [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx) | `ansible-playbook -i inventory.ini playbooks/optional/deploy_ingress-nginx.yml` | [MetalLB](https://metallb.universe.tf/) or other Load Balancer integration |
-| [DataDog agents](https://docs.datadoghq.com/integrations/kubernetes/) | `ansible-playbook -i inventory.ini playbooks/optional/deploy_datadog.yml` | |
-
-## Tips
-1. You can rollback the entire deployment with: `ansible-playbook -i inventory.ini playbooks/optional/delete_all_resources.yml`
-2. If Calico isn't deploying correctly it's likely the CIDR you assigned to it in `vars.yml` conflicts with your network. 
-3. See [this repository](https://github.com/zimmertr/Bootstrap-Kubernetes-with-LXC) to do this with LXC instead.  Benefits of using LXC include:
 ```
-* No virtualization overhead means better performance
-* Ability to directly mount volumes from your server into your containers.
+ansible-playbook -i inventory.ini ./proxmox-kubernetes/site.yml  --extra-vars "masters=k8_prod_masters minions=k8_prod_minions proxmox=proxmox-01" --start-at-task="Including the variables package."
+
+--start-at-task="Installing the required packages to bootstrap a kubernetes cluster."
 ```
 
-## TODO
-1. Add better support for multi-node Proxmox clusters.
-2. Perform security audit and enhance if necessary.
-3. Add info to README about updating inventory file and how to handle SSH key generation and propegation.
-4. Add playbook to integrate k8s with a log server.
-5. Automatically include `inventory.ini` somehow so one can simply run `ansible-playbook site.yml` to deploy.
-6. Create playbook to upgrade kubernetes version for kubeadm cluster.
-7. Create playbook to install OS updates on nodes.
-8. Move dashboard deployment to optional features.
-9. Refactor lazy sleep tasks for more intelligent `wait_for` tasks.
+Delete cluster
+
+```
+ansible-playbook -i inventory.ini ./proxmox-kubernetes/playbooks/optional/delete_all_resources.yml --extra-vars "masters=k8_prod_masters minions=k8_prod_minions proxmox=proxmox-01" 
+```
+
+Deploy MetalLB
+
+```
+ansible-playbook -i inventory.ini ./proxmox-kubernetes/playbooks/helm/deploy_metallb.yml --extra-vars "masters=k8_prod_masters minions=k8_prod_minions proxmox=proxmox-01" 
+```
+
+Deploy Devnotnull.com production resources
+
+```
+helm upgrade --install redis bitnami/redis --version 16.12.1 \
+  --set master.service.type=LoadBalancer \
+  --set replica.service.type=LoadBalancer \
+  --set master.service.loadBalancerIP=10.150.10.141 \
+  --set replica.service.loadBalancerIP=10.150.10.142 \
+  --set master.persistence.enabled=false \
+  --set replica.persistence.enabled=false \
+  --set auth.enabled=false \
+  --set image.pullPolicy=Always
+```
+
+```
+helm upgrade --install devnotnull-api devnotnull/nodejs --version 2 \
+  --set env.NODE_RUNTIME_ENV=production \
+  --set env.CDN_BUCKET=production \
+  --set image.repository=alexbrown201/devnotnull-api-v3:latest \
+  --set port=3000 \
+  --set service.type=LoadBalancer \
+  --set service.loadBalancerIP=10.150.10.143 \
+  --set image.pullPolicy=Always \
+  --set replicaCount=10
+```
+
+```
+helm upgrade --install devnotnull-ui devnotnull/nodejs --version 2 \
+  --set env.NODE_RUNTIME_ENV=production \
+  --set env.CDN_BUCKET=production \
+  --set image.repository=alexbrown201/devnotnull-ui:latest \
+  --set port=3000 \
+  --set service.type=LoadBalancer \
+  --set service.loadBalancerIP=10.150.10.134 \
+  --set image.pullPolicy=Always \
+  --set replicaCount=10
+```
+
+## Development
+
+```
+ansible-playbook -i inventory.ini ./proxmox-kubernetes/site.yml  --extra-vars "masters=k8_test_masters minions=k8_prod_minions proxmox=proxmox-01" 
+```
+
+Delete cluster
+
+```
+ansible-playbook -i inventory.ini ./proxmox-kubernetes/playbooks/optional/delete_all_resources.yml --extra-vars "masters=k8_test_masters minions=k8_test_minions proxmox=proxmox-01" 
+```
+
+Deploy MetalLB
+
+```
+ansible-playbook -i inventory.ini ./proxmox-kubernetes/playbooks/helm/deploy_metallb.yml --extra-vars "masters=k8_testmasters minions=k8_test_minions proxmox=proxmox-01" 
+```
+
+Deploy Devnotnull.com development resources
+
+```
+helm upgrade --install redis bitnami/redis --version 16.12.1 \
+  --set master.service.type=LoadBalancer \
+  --set replica.service.type=LoadBalancer \
+  --set master.service.loadBalancerIP=10.150.10.141 \
+  --set replica.service.loadBalancerIP=10.150.10.142 \
+  --set master.persistence.enabled=false \
+  --set replica.persistence.enabled=false \
+  --set auth.enabled=false \
+  --set image.pullPolicy=Always
+```
+
+```
+helm upgrade --install devnotnull-api devnotnull/nodejs --version 2 \
+  --set env.NODE_RUNTIME_ENV=production \
+  --set env.CDN_BUCKET=production \
+  --set image.repository=alexbrown201/devnotnull-api-v3:latest \
+  --set port=3000 \
+  --set service.type=LoadBalancer \
+  --set service.loadBalancerIP=10.150.10.143 \
+  --set image.pullPolicy=Always \
+  --set replicaCount=10
+```
+
+```
+helm upgrade --install devnotnull-ui devnotnull/nodejs --version 2 \
+  --set env.NODE_RUNTIME_ENV=production \
+  --set env.CDN_BUCKET=production \
+  --set image.repository=alexbrown201/devnotnull-ui:latest \
+  --set port=3000 \
+  --set service.type=LoadBalancer \
+  --set service.loadBalancerIP=10.150.10.134 \
+  --set image.pullPolicy=Always \
+  --set replicaCount=10
+```

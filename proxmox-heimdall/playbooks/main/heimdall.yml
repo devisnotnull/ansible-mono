@@ -1,10 +1,11 @@
 ---
-- hosts: elk_hosts
+- hosts: heimdall_hosts
   become: true
   gather_facts: true
   roles:
     - role: triplepoint.heimdall
   tasks:
+
     - name: Including the variables.
       include_vars:
           file: ../../vars.yml

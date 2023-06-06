@@ -1,0 +1,53 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+image_download_location: '/tmp/'
+
+# Path to the SSH Public Key on your Proxmox Server.
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# Resource Pool for your virtual machines.
+resource_pool: "Images"
+
+# VM IDs
+id: '60100'
+
+# Hostnames
+hn: "portainer.devnotnull.com"
+
+# Number of CPUs
+cpu: "8"
+
+# Amount of memory expressed in megabytes
+mem: "16384"
+
+# Disk Sizes
+size: "500G"
+
+# IP Addresses
+ip: "10.10.10.51"
+
+# Subnet Sizes
+sn: "/24"
+
+# Network Gateway
+gw: "10.10.10.1"
+
+# DNS Servers
+ns: "10.10.10.1"
+
+# Search Domains
+sd: "devnotnull.com"
+
+# Network Bridges
+bridge: "vmbr0"
+
+# Storage volumes
+stg: "Pool1"

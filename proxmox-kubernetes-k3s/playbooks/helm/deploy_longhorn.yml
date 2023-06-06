@@ -1,0 +1,14 @@
+- hosts: "{{masters}}"
+  gather_facts: false
+  tasks:
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Add Longhorn helm config
+        shell: helm repo add longhorn https://charts.longhorn.io
+
+      - name: Template longhorn config
+        ansible.builtin.template:
+          src: '../../files/helm/longhorn.yml'
+          dest: ./longhorn.yml

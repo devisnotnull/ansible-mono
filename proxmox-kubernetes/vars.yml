@@ -5,7 +5,7 @@
 ###############################################################################################
 
 # img image to use for your Virtual Machines: 
-image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
+image: 'https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img'
 
 # Location to use for storing the img image. Be sure to end the directory with a '/'.
 image_download_location: '/tmp/'
@@ -43,7 +43,7 @@ domain: "devnotnull.com"
 bridge: "vmbr0"
 
 # Storage volumes
-storage: "proxmox-01"
+storage: "Pool1"
 
 # CIDR for the Calico Pod Network - MUST be different from your Kubernetes CIDR to avoid an IP conflict. Subnet size will automatically be set to /16.
 calico_cidr: '172.16.0.0'
@@ -58,6 +58,12 @@ dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio
 
 # Service user created for the dashboard.
 user_name: 'devnotnull'
+
+###############################################################################################
+#                                        -K3S Options-                                        # 
+###############################################################################################
+
+k3s_token: 'VREY129NCK'
 
 ###############################################################################################
 #                                        -NFS Options-                                        # 
@@ -98,7 +104,7 @@ nfs_reclaim_policy: 'Retain'
 #                                                                                             #
 ###############################################################################################
 
-metallb_cidr: '10.150.10.128/25'
+metallb_cidr: '10.150.10.0/24'
 
 ###############################################################################################
 #                              -NGINX Ingress Controller Options-                             # 
@@ -109,7 +115,3 @@ metallb_cidr: '10.150.10.128/25'
 
 # The IP Address to use 
 nginx_load_balancer_ip: '10.10.10.100'
-
-###############################################################################################
-# 
-###############################################################################################

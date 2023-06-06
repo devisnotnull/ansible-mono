@@ -62,7 +62,3 @@
         shell: qm start {{ hostvars[item].id }}
         with_items:
           - "{{ groups[masters] }}"
-
-      - name: Waiting 2 minutes for for ubuntu to finish booting.
-        pause:
-            seconds: 120

@@ -1,0 +1,9 @@
+---
+- hosts: haproxy_hosts
+  become: true
+  gather_facts: true
+  roles:
+    - role: incubateurpe.haproxy.tcp_proxy
+      vars:
+        haproxy_bind_addresses:
+          - 127.0.0.1:8888

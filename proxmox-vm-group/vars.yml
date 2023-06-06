@@ -1,0 +1,42 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+image: 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+image_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+resource_pool: "Rancher"
+
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# The version of Docker to use on the hosts.
+# Make sure the version is listed here: https://kubernetes.io/docs/setup/release/notes/
+# You can list available versions with: `aptitude versions docker-ce`
+docker_version: '5:19.03.11~3-0~debian-buster'
+
+# Number of CPUs
+master_cpu: "2"
+minion_cpu: "4"
+
+# Amount of memory expressed in megabytes
+master_mem: "4096"
+minion_mem: "12288"
+
+# Disk Sizes
+master_disk: "50G"
+minion_disk: "100G"
+
+# Search Domains
+domain: "devnotnull.com"
+
+# Network Bridges
+bridge: "vmbr0"
+
+# Storage volumes
+storage: "Pool1"

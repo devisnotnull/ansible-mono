@@ -1,0 +1,11 @@
+datadog:
+  logs:
+    enabled: true
+    containerCollectAll: true
+ 
+# targetSystem -- Target OS for this deployment
+# (possible values: linux, windows)
+targetSystem: "linux"
+datadog:
+  # datadog.apiKey -- Your Datadog API key
+  apiKey: "e7a8f4ea5a0667fe3be4e671176f5e3e"

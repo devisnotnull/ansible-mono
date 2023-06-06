@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-web-ui
+  namespace: default
+spec:
+  selector:
+    k8s-app: traefik
+  ports:
+  - name: web
+    port: 80
+    targetPort: 900
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-web-ui
+  namespace: default
+spec:
+  rules:
+  - host: traefik-ui.devnotnull.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: traefik-web-ui
+          servicePort: web

@@ -1,5 +1,5 @@
 ---
-- hosts: "{{masters[0]}}"
+- hosts: "{{masters}}"
   gather_facts: False
   tasks:
       - name: Including the variables.

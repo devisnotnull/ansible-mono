@@ -54,7 +54,7 @@ sd: "devnotnull.com"
 bridge: "vmbr0"
 
 # Storage volumes
-stg: "proxmox-01"
+stg: "Pool1"
 
 #############
 

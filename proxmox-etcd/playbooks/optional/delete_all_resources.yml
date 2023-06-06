@@ -1,0 +1,29 @@
+---
+- hosts: "{{proxmox}}"
+  gather_facts: False
+  vars:
+  tasks: 
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+            
+      - name: Stopping the etcd VMs.
+        shell: qm stop {{ hostvars[item].id}}
+        with_items:
+          - "{{ groups[etcd] }}"
+        ignore_errors: yes
+
+      - name: Destroying the etcd VMs.
+        shell: qm destroy {{ hostvars[item].id}}
+        with_items:
+          - "{{ groups[etcd] }}"
+        ignore_errors: yes
+
+      - name: Deleting the Resource Pool.
+        shell: pvesh delete /pools/{{ resource_pool }}
+
+      - name: Deleting the Ubuntu img image.
+        file:
+            path: "/tmp/image.img"
+            state: absent
+        ignore_errors: yes

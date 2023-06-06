@@ -1,0 +1,58 @@
+---
+- hosts: influx
+  tasks:
+    - name: Import InfluxDB GPG signing key
+      become: yes
+      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+
+    - name: Add InfluxDB repository
+      become: yes
+      apt_repository: repo='deb https://repos.influxdata.com/ubuntu xenial stable' state=present
+
+    - name: Install InfluxDB packages
+      become: yes
+      apt: name=influxdb state=present
+
+    - name: Modify InfluxDB hostname
+      become: yes
+      replace:
+        dest=/etc/influxdb/influxdb.conf
+        regexp='^# hostname = "localhost"$'
+        replace='hostname = \"{{ ansible_hostname }}\"'
+        backup=yes
+
+    - name: Start the InfluxDB service
+      become: yes
+      service: name=influxdb state=restarted enabled=yes
+
+    - name: Pause for InfluxDB service
+      become: yes
+      pause: seconds=3
+
+    - name: Create sample database
+      command: /usr/bin/influx -execute 'CREATE DATABASE sample_database'
+      ignore_errors: yes
+
+    - name: Load some test data into sample database
+      uri:
+        url: http://{{ ansible_hostname }}:8086/write?db=sample_database
+        method: POST
+        body: "random_ints,host=server_{{ 10 | random }} value={{ 100 | random }}"
+        status_code: 204
+      with_sequence: start=1 end=10
+
+    - name: Download chronograf
+      become: yes
+      shell: wget https://dl.influxdata.com/chronograf/releases/chronograf_1.9.4_amd64.deb
+
+    - name: Install chronograf
+      become: yes
+      shell: sudo dpkg -i chronograf_1.9.4_amd64.deb
+
+    - name: Start the chronograf service
+      become: yes
+      service: name=chronograf state=restarted enabled=yes
+
+    - name: Pause for chronograf service
+      become: yes
+      pause: seconds=3

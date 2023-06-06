@@ -31,6 +31,18 @@
             --sshkeys {{ ssh_key }}
         with_items:
           - "{{ groups[minions] }}"
+        register: _create_instances
+        async: 600  # Maximum runtime in seconds. Adjust as needed.
+        poll: 0  # Fire and continue (never poll)
+
+      - name: Wait for VM creation to finish
+        async_status:
+          jid: "{{ item.ansible_job_id }}"
+        register: _jobs
+        until: _jobs.finished
+        delay: 5  # Check every 5 seconds. Adjust as you like.
+        retries: 10  # Retry up to 10 times. Adjust as needed.
+        with_items: "{{ _create_instances.results }}"
 
       - name: Importing the qcow2 image as a disk.
         shell: qm importdisk {{ hostvars[item].id }} {{ image_download_location }}image.qcow2 {{ storage }}
@@ -44,21 +56,52 @@
                --scsi0 {{ storage }}:vm-{{ hostvars[item].id }}-disk-0
                --ide2 {{ storage }}:cloudinit
                --boot c --bootdisk scsi0
-               --serial0 socket
                --onboot 1
         with_items:
           - "{{ groups[minions] }}"
+        register: _configure_instances
+        async: 600  # Maximum runtime in seconds. Adjust as needed.
+        poll: 0  # Fire and continue (never poll)
+
+      - name: Wait for VM configure to finish
+        async_status:
+          jid: "{{ item.ansible_job_id }}"
+        register: _jobs
+        until: _jobs.finished
+        delay: 5  # Check every 5 seconds. Adjust as you like.
+        retries: 10  # Retry up to 10 times. Adjust as needed.
+        with_items: "{{ _configure_instances.results }}"
 
       - name: Resizing the disk.
         shell: qm resize {{ hostvars[item].id }} scsi0 {{ minion_disk }}
         with_items:
           - "{{ groups[minions] }}"
+        register: _resize_instances
+        async: 600  # Maximum runtime in seconds. Adjust as needed.
+        poll: 0  # Fire and continue (never poll)
+        
+      - name: Wait for VM disk resize to finish
+        async_status:
+          jid: "{{ item.ansible_job_id }}"
+        register: _jobs
+        until: _jobs.finished
+        delay: 5  # Check every 5 seconds. Adjust as you like.
+        retries: 10  # Retry up to 10 times. Adjust as needed.
+        with_items: "{{ _resize_instances.results }}"
 
       - name: Starting the VMs.
         shell: qm start {{ hostvars[item].id }}
         with_items:
           - "{{ groups[minions] }}"
+        register: _start_instances
+        async: 600  # Maximum runtime in seconds. Adjust as needed.
+        poll: 0  # Fire and continue (never poll)
 
-      - name: Waiting 2 minutes for for ubuntu to finish booting.
-        pause:
-            seconds: 120
+      - name: Wait for VM start to finish
+        async_status:
+          jid: "{{ item.ansible_job_id }}"
+        register: _jobs
+        until: _jobs.finished
+        delay: 5  # Check every 5 seconds. Adjust as you like.
+        retries: 10  # Retry up to 10 times. Adjust as needed.
+        with_items: "{{ _start_instances.results }}"

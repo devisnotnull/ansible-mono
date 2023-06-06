@@ -1,0 +1,26 @@
+---
+- hosts: "{{masters}}:{{minions}}"
+  gather_facts: False
+  tasks:
+    - name: Installing nfs-common.
+      become: yes
+      apt:
+          name: nfs-common
+
+- hosts: "{{masters}}"
+  gather_facts: False
+  tasks:
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Add helm nfs-provisioner
+        shell: helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+
+      - name: install helm nfs-provisioner
+        shell: |
+          helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+          --set nfs.server={{nfs_hostname}} \
+          --set nfs.path={{nfs_mount_point}}  \
+          --set storageClass.defaultClass=true \
+          --set storageClass.name={{nfs_provisioner}}

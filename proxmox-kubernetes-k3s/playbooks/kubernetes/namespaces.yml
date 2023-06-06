@@ -1,0 +1,11 @@
+---
+- hosts: "{{masters}}"
+  gather_facts: False
+  tasks:
+      - name: Including the variables.
+        include_vars:
+           file: ../../vars.yml
+
+      - name: Configuring development namespace
+        become: yes
+        shell: echo '{{ lookup('template', '../../files/templates/namespaces/development.yml.j2') }}' | kubectl apply -f -

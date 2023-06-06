@@ -1,0 +1,66 @@
+---
+- hosts: "{{proxmox}}"
+  gather_facts: false
+  tasks:
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Display all variables/facts known for a host
+        debug:
+          var: hostvars[groups[etcd]]
+
+      - name: Creating a resource pool.
+        shell: pvesh create /pools -poolid "{{ resource_pool }}" --Comment "Kubernetes Cluster"
+        ignore_errors: yes
+
+      - name: Downloading the ubuntu qcow2 image.
+        get_url:
+            url: "{{ image }}"
+            dest: "{{ image_download_location }}image.qcow2"
+          
+      - name: Creating the VMs.
+        shell: >
+            qm create {{ hostvars[item].id }}
+            --pool {{ resource_pool }}
+            --ostype "l26"
+            --name {{ hostvars[item].node_name }}
+            --description "Kubernetes VM"
+            --agent 1
+            --cores {{ etcd_cpu }}
+            --memory {{ etcd_mem }}
+            --net0 "virtio,bridge={{ bridge }}"
+            --ipconfig0 "gw={{ hostvars[item].gateway }},ip={{ hostvars[item].ip }}{{ hostvars[item].subnet }}"
+            --sshkeys {{ ssh_key }}
+        with_items:
+          - "{{ groups[etcd] }}"
+
+      - name: Importing the qcow2 image as a disk.
+        shell: qm importdisk {{ hostvars[item].id }} {{ image_download_location }}image.qcow2 {{ storage }}
+        with_items:
+          - "{{ groups[etcd] }}"
+
+      - name: Configuring the VM Hardware.
+        shell: qm set {{ hostvars[item].id }}
+               --cipassword password
+               --scsihw virtio-scsi-pci
+               --scsi0 {{ storage }}:vm-{{ hostvars[item].id }}-disk-0
+               --ide2 {{ storage }}:cloudinit
+               --boot c --bootdisk scsi0
+               --onboot 1
+        with_items:
+          - "{{ groups[etcd] }}"
+
+      - name: Resizing the disk.
+        shell: qm resize {{ hostvars[item].id }} scsi0 {{ etcd_disk }}
+        with_items:
+          - "{{ groups[etcd] }}"
+
+      - name: Starting the VMs.
+        shell: qm start {{ hostvars[item].id }}
+        with_items:
+          - "{{ groups[etcd] }}"
+
+      - name: Waiting 2 minutes for for ubuntu to finish booting.
+        pause:
+            seconds: 100

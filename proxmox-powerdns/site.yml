@@ -1,0 +1,3 @@
+---
+- import_playbook: playbooks/main/deploy_powerdns_vms.yml
+- import_playbook: playbooks/main/deploy_powerdns.yml

@@ -1,0 +1,33 @@
+---
+- hosts: "{{masters}}:{{minions}}"
+  gather_facts: False
+  tasks:            
+      - name: Including the variables.
+        include_vars:
+            file: ../../vars.yml
+
+      - name: Performing a Package Upgrade.
+        become: yes
+        apt:
+            name: '*'
+            state: latest
+
+      - name: Installing the base packages.
+        become: yes
+        apt:
+            name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'openssl', 'python3', 'qemu-guest-agent', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']    
+
+      - name: Updating the package repositories.
+        become: yes
+        apt: 
+          update_cache: yes
+
+      - name: Installing nfs.
+        become: yes
+        apt:
+            name: ['nfs-client']
+
+      - name: Python deps
+        become: yes
+        shell: pip3 install kubernetes
+  

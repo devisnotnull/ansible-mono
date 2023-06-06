@@ -1,0 +1,23 @@
+---
+- hosts: "{{masters}}"
+  gather_facts: False
+  tasks:
+      - name: Including the variables.
+        include_vars:
+           file: ../../vars.yml
+            
+      - name: Deploying MetalLB namespace.
+        become: yes
+        shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.9/config/manifests/metallb-native.yaml
+
+      - name: Waiting 200 seconds for allow for deployment.
+        pause:
+            seconds: 200
+
+      - name: Configuring MetalLB pool.
+        become: yes
+        shell: echo '{{ lookup('template', '../../files/templates/metallb/cm_metallb_pool.yml.j2') }}' | kubectl apply -f -
+
+      - name: Configuring MetalLB l2 assignment.
+        become: yes
+        shell: echo '{{ lookup('template', '../../files/templates/metallb/cm_metallb_l2.yml.j2') }}' | kubectl apply -f -

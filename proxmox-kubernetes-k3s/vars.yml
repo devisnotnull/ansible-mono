@@ -1,0 +1,107 @@
+###############################################################################################
+#                                      -General Options-                                      # 
+###############################################################################################
+# These parameters are required.                                                              #
+###############################################################################################
+
+# img image to use for your Virtual Machines: 
+image: 'https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img'
+
+# Location to use for storing the img image. Be sure to end the directory with a '/'.
+image_download_location: '/tmp/'
+
+# Resource Pool for your virtual machines.
+resource_pool: "Kubernetes-k3s"
+
+ssh_key: '/etc/pve/priv/authorized_keys'
+
+# The version of Docker to use on the hosts.
+# Make sure the version is listed here: https://kubernetes.io/docs/setup/release/notes/
+# You can list available versions with: `aptitude versions docker-ce`
+docker_version: '5:19.03.11~3-0~debian-buster'
+
+# The version of Kubernetes to install.
+# The newest release can be found here: https://kubernetes.io/docs/setup/release/notes/
+kubernetes_version: "v1.22.0"
+
+# Number of CPUs
+master_cpu: "2"
+minion_cpu: "4"
+
+# Amount of memory expressed in megabytes
+master_mem: "4096"
+minion_mem: "12288"
+
+# Disk Sizes
+master_disk: "200G"
+minion_disk: "1000G"
+
+# Search Domains
+domain: "devnotnull.com"
+
+# Network Bridges
+bridge: "vmbr0"
+
+# Storage volumes
+storage: "Pool1"
+
+# CIDR for the Calico Pod Network - MUST be different from your Kubernetes CIDR to avoid an IP conflict. Subnet size will automatically be set to /16.
+calico_cidr: '172.16.0.0'
+
+# URL for the Calico Network Policy: 
+# Can be found here: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#tabs-pod-install-1
+calico_policy_url: 'https://docs.projectcalico.org/v3.19/manifests/calico.yaml'
+
+# The URL for the Kubernetes Dashboard Manifest. Not locally hosted as it changes frequently.
+# Can be found in the `Getting Started` section of this page: https://github.com/kubernetes/dashboard/blob/master1/README.md
+dasboard_url: 'https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml'
+
+# Service user created for the dashboard.
+user_name: 'devnotnull'
+
+###############################################################################################
+#                                        -K3S Options-                                        # 
+###############################################################################################
+
+k3s_token: 'VREY129NCK'
+
+###############################################################################################
+#                                        -NFS Options-                                        # 
+###############################################################################################
+# These parameters are only required if you have an NFS server and would like to enable the   #
+# optional support for dynamic provisioning of Persistent Storage volumes for your pods.
+###############################################################################################
+
+# NFS server
+nfs_hostname: 'nas.devnotnull.com'
+
+# NFS Mount Point
+nfs_mount_point: '/mnt/Tank/proxmox-backup'
+
+# NFS Provisioner Name
+nfs_provisioner: 'nfs'
+
+# Namespace to deploy the NFS Provisioner to.
+nfs_namespace: 'nfs-provisioner'
+
+# Default reclaim policy. https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy
+nfs_reclaim_policy: 'Retain'
+
+###############################################################################################
+#                                      -MetalLB Options-                                      # 
+###############################################################################################
+#                                                                                             #
+# WARNING: MetalLB is currently supported, however dynamic provisioning is NOT currently      #
+# supported despite the explanation below. This will come in a later release, however, if you #
+# are interested in using this feature you will need to modify the configmap located in the   #
+# MetalLB files directory yourself to match the variables you declare here.                   #
+#                                                                                             #
+# These parameters are only required if you want to enable on-prem load balancing with        #
+# MetalLB. The MetalLB configuration file will be dynamically provisioned based on how many   #
+# variable sets you declare below. This is intended to allow you to provision a single or     #
+# multiple address pools depending on your personal network configuration. The configuration  #
+# is dynamically generated based on how many sets of variables you list below. For example:   #
+#                                                                                             #
+###############################################################################################
+
+metallb_cidr: '10.150.10.100-10.150.10.200'

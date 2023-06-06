@@ -1,0 +1,16 @@
+# kubeadm-config.yaml
+kind: ClusterConfiguration
+apiVersion: kubeadm.k8s.io/v1beta2
+kubernetesVersion: v1.21.0
+networking:
+  podSubnet: "172.16.0.0/16"
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
+nodeRegistration:
+  kubeletExtraArgs:
+    cgroup-driver: "systemd"
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: "systemd"

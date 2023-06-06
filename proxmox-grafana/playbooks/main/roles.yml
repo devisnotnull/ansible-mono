@@ -9,8 +9,7 @@
         grafana_security:
           admin_user: admin
           admin_password: password
-
-          
+ 
   tasks:
     - name: Including the variables.
       include_vars:
