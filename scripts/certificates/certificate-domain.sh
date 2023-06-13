@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # This script will create a certificate for a subdomain
-# ./certificate-sub-domain.sh staging 149.86.35.190 devnotnull.com
-# ./certificate-sub-domain.sh staging 149.86.35.190 devnotnull.com vpn
+# ./certificate-domain.sh staging 149.86.35.190 devnotnull.com
+# ./certificate-domain.sh staging 149.86.35.190 devnotnull.com vpn
 
 staging="https://acme-staging-v02.api.letsencrypt.org/directory"
 production="https://acme-v02.api.letsencrypt.org/directory"
