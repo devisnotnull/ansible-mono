@@ -1,4 +1,10 @@
-# Ansible mono helm charts
+## Deploy devnotnull ui
+
+## Deploy devnotnull helm repo 
+
+```
+helm repo add devnotnull https://devnotnull-helm.s3.eu-west-2.amazonaws.com
+```
 
 To install the remote repo 
 

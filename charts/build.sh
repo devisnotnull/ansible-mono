@@ -1,6 +1,6 @@
 #!/bin/sh
 
-helm package ./nodejs/ -d ./build
+helm package ./nodejs-template/ -d ./build
 helm repo index ./build
 
 # aws s3 mb s3://devnotnull-helm

@@ -66,7 +66,7 @@ cat <<EOF | kubectl create -f -
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: letsencrypt-$1-issuer
+  name: letsencrypt-$fulldomainString-$1-issuer
   namespace: default
 spec:
   acme:
@@ -81,7 +81,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
+          class: traefik
 EOF
 
 echo "Generate certificate for $fulldomain"
@@ -93,9 +93,9 @@ metadata:
   name: $fulldomainString-$1
   namespace: default
 spec:
-  secretName: $fulldomainString-$1
+  secretName: $fulldomainString-$1-certificate
   issuerRef:
-    name: letsencrypt-$1-issuer
+    name: letsencrypt-$fulldomainString-$1-issuer
   commonName: $fulldomain
   dnsNames:
   - $fulldomain
